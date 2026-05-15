@@ -89,8 +89,14 @@ const findOrCreateSectionInGroup = async (
   sectionGroupId: string,
   name: string,
 ): Promise<Section> => {
-  // listSections doesn't filter by sectionGroupId, so just always create.
-  // Worst case we accumulate sections inside the group across runs.
+  // listSections() with no notebookId returns all sections flat, each carrying
+  // parentSectionGroup metadata (we select+expand for it). Filter on both name
+  // and parent id so we don't accumulate duplicates across runs.
+  const all = await listSections();
+  const existing = all.find(
+    (s) => s.displayName === name && s.parentSectionGroup?.id === sectionGroupId,
+  );
+  if (existing) return existing;
   return createSection({ sectionGroupId }, name);
 };
 
@@ -104,13 +110,15 @@ const main = async (): Promise<void> => {
     assert(token.length > 20, 'token looks too short');
   });
 
-  const notebooks = await step('list_notebooks', () => listNotebooks());
+  await step('list_notebooks', async () => {
+    const notebooks = await listNotebooks();
+    assert(notebooks.length > 0, 'expected at least one notebook for the account');
+  });
 
   const notebook = await step(
     `find or create notebook "${NOTEBOOK_NAME}"`,
     () => findOrCreateNotebook(NOTEBOOK_NAME),
   );
-  void notebooks;
 
   const section = await step(
     `find or create section "${SECTION_NAME}"`,
@@ -192,8 +200,19 @@ const main = async (): Promise<void> => {
   });
 
   await step(`cleanup: delete ${createdPageIds.length} page(s)`, async () => {
-    for (const id of createdPageIds) {
-      await deletePage(id);
+    // Parallel + tolerant so one stuck delete doesn't leak the others.
+    const results = await Promise.allSettled(
+      createdPageIds.map((id) => deletePage(id)),
+    );
+    const failed = results.filter((r) => r.status === 'rejected');
+    if (failed.length > 0) {
+      const reasons = failed
+        .map((r) => (r.status === 'rejected' ? String(r.reason) : ''))
+        .filter(Boolean)
+        .join('; ');
+      throw new Error(
+        `${failed.length}/${createdPageIds.length} delete attempts failed: ${reasons}`,
+      );
     }
   });
 
