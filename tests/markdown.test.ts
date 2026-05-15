@@ -45,6 +45,11 @@ describe('markdownToHtmlFragment', () => {
     expect(html).not.toContain('<html');
     expect(html).not.toContain('<body');
   });
+
+  it('trims trailing whitespace that marked appends', () => {
+    const html = markdownToHtmlFragment('Hello');
+    expect(html).toBe('<p>Hello</p>');
+  });
 });
 
 describe('htmlToMarkdown', () => {

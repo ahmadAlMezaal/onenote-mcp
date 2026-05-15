@@ -9,7 +9,7 @@ const operationSchema = z
       .string()
       .min(1)
       .describe(
-        'The element to act on: `body` (page body), `title` (page title), or `#<data-id>` (a specific element — find data-id values in the HTML returned by read_page).',
+        'The element to act on: `body`, `title`, or the raw `data-id` of an element from read_page HTML. A leading `#` is accepted and stripped (so CSS-style selectors copied from elsewhere also work).',
       ),
     action: z
       .enum(['append', 'prepend', 'insert', 'replace', 'delete'])
@@ -46,6 +46,9 @@ const inputSchema = {
     .describe('Ordered list of edits to apply to the page in a single request.'),
 };
 
+const isTitleTarget = (target: string): boolean =>
+  (target.startsWith('#') ? target.slice(1) : target) === 'title';
+
 const toGraphCommand = (op: z.infer<typeof operationSchema>): UpdatePageCommand => {
   const cmd: UpdatePageCommand = {
     target: op.target,
@@ -53,7 +56,14 @@ const toGraphCommand = (op: z.infer<typeof operationSchema>): UpdatePageCommand 
   };
   if (op.position) cmd.position = op.position;
   if (op.content !== undefined) {
-    cmd.content = op.format === 'html' ? op.content : markdownToHtmlFragment(op.content);
+    let content = op.format === 'html' ? op.content : markdownToHtmlFragment(op.content);
+    // marked wraps single-line content in <p>…</p>. The title element renders
+    // those literally, so unwrap exactly one such pair when targeting the title.
+    if (isTitleTarget(op.target) && op.format !== 'html') {
+      const unwrapped = content.match(/^<p>([\s\S]*)<\/p>$/);
+      if (unwrapped) content = unwrapped[1]!;
+    }
+    cmd.content = content;
   }
   return cmd;
 };

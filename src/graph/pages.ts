@@ -72,7 +72,7 @@ export const deletePage = async (pageId: string): Promise<void> => {
 export type UpdatePageAction = 'append' | 'prepend' | 'insert' | 'replace' | 'delete';
 
 export interface UpdatePageCommand {
-  /** `body`, `title`, or `#<data-id>`. */
+  /** `body`, `title`, or the element's `data-id` value. A leading `#` is accepted and stripped. */
   target: string;
   action: UpdatePageAction;
   /** Required when `action` is `insert`; optional with `append`/`prepend` for sibling positioning. */
@@ -85,10 +85,17 @@ export const updatePage = async (
   pageId: string,
   commands: UpdatePageCommand[],
 ): Promise<void> => {
+  // Graph expects raw data-id values, not CSS-style "#abc" selectors. Strip the
+  // leading `#` if the caller passed one — they're easy to copy that way from
+  // read_page HTML and we don't want them to 400 the request.
+  const sanitized = commands.map((cmd) => ({
+    ...cmd,
+    target: cmd.target.startsWith('#') ? cmd.target.slice(1) : cmd.target,
+  }));
   await graphRequest<void>(`/me/onenote/pages/${encodeURIComponent(pageId)}/content`, {
     method: 'PATCH',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(commands),
+    body: JSON.stringify(sanitized),
     parse: 'none',
   });
 };

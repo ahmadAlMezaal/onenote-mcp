@@ -156,9 +156,10 @@ describe('updatePage', () => {
     expect((init as RequestInit).headers).toMatchObject({
       'Content-Type': 'application/json',
     });
+    // Targets are sent without a leading `#`. The caller's `#abc` becomes `abc`.
     expect(JSON.parse((init as RequestInit).body as string)).toEqual([
       { target: 'body', action: 'append', content: '<p>hi</p>' },
-      { target: '#abc', action: 'delete' },
+      { target: 'abc', action: 'delete' },
     ]);
   });
 });

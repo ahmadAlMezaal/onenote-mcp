@@ -63,4 +63,4 @@ export const htmlToMarkdown = (html: string): string => turndown.turndown(html);
  * as the `content` of an `update_page` PATCH command.
  */
 export const markdownToHtmlFragment = (markdown: string): string =>
-  marked.parse(markdown, { async: false }) as string;
+  (marked.parse(markdown, { async: false }) as string).trim();
