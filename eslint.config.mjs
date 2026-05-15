@@ -22,6 +22,9 @@ export default tseslint.config(
         'warn',
         { prefer: 'type-imports', fixStyle: 'inline-type-imports' },
       ],
+      // Project convention: use arrow functions over function declarations.
+      'func-style': ['error', 'expression', { allowArrowFunctions: true }],
+      'prefer-arrow-callback': 'error',
     },
   },
   {
