@@ -17,4 +17,6 @@ export const createNotebook = (name: string): Promise<Notebook> =>
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ displayName: name }),
+    // $select on POST shapes the response so callers don't see undefined fields.
+    query: { $select: NOTEBOOK_SELECT },
   });

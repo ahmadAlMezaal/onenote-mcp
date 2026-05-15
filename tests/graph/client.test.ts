@@ -167,13 +167,15 @@ describe('updatePage', () => {
 });
 
 describe('createNotebook', () => {
-  it('POSTs displayName to /me/onenote/notebooks', async () => {
+  it('POSTs displayName to /me/onenote/notebooks with $select shaping the response', async () => {
     fetchMock.mockResolvedValueOnce(jsonResponse({ id: 'n1', displayName: 'My Book' }));
     const notebook = await createNotebook('My Book');
     expect(notebook.id).toBe('n1');
 
     const [url, init] = fetchMock.mock.calls[0]!;
-    expect(String(url)).toBe('https://graph.microsoft.com/v1.0/me/onenote/notebooks');
+    const parsed = new URL(String(url));
+    expect(parsed.pathname).toBe('/v1.0/me/onenote/notebooks');
+    expect(parsed.searchParams.get('$select')).toContain('isDefault');
     expect((init as RequestInit).method).toBe('POST');
     expect(JSON.parse((init as RequestInit).body as string)).toEqual({
       displayName: 'My Book',
@@ -182,15 +184,16 @@ describe('createNotebook', () => {
 });
 
 describe('createSection', () => {
-  it('POSTs displayName to the notebook sections endpoint', async () => {
+  it('POSTs displayName to the notebook sections endpoint with $select and $expand', async () => {
     fetchMock.mockResolvedValueOnce(jsonResponse({ id: 's1', displayName: 'Work' }));
     const section = await createSection('nb-abc', 'Work');
     expect(section.id).toBe('s1');
 
     const [url, init] = fetchMock.mock.calls[0]!;
-    expect(String(url)).toBe(
-      'https://graph.microsoft.com/v1.0/me/onenote/notebooks/nb-abc/sections',
-    );
+    const parsed = new URL(String(url));
+    expect(parsed.pathname).toBe('/v1.0/me/onenote/notebooks/nb-abc/sections');
+    expect(parsed.searchParams.get('$select')).toContain('parentNotebook');
+    expect(parsed.searchParams.get('$expand')).toContain('parentNotebook');
     expect((init as RequestInit).method).toBe('POST');
     expect(JSON.parse((init as RequestInit).body as string)).toEqual({ displayName: 'Work' });
   });
