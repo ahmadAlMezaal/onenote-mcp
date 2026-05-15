@@ -130,6 +130,7 @@ Any MCP-compatible client that supports stdio servers will work. Run `npx @atomi
 | `search_pages`   | Full-text search across pages (title + content).                | `query`, `limit?`                                |
 | `read_page`      | Returns page metadata + content (HTML or Markdown).             | `pageId`, `format?` (`html` \| `markdown`)       |
 | `create_page`    | Creates a page in a section. Accepts Markdown (default) or HTML. | `sectionId`, `title`, `content`, `format?`       |
+| `update_page`    | Applies edits to a page: append/prepend/insert/replace/delete elements. | `pageId`, `operations[]`                  |
 | `delete_page`    | Permanently deletes a page. **Irreversible.**                   | `pageId`                                         |
 
 ---
@@ -146,9 +147,9 @@ Any MCP-compatible client that supports stdio servers will work. Run `npx @atomi
 
 ## Known limitations
 
-- **No in-place page editing in v1.** Microsoft Graph's `PATCH /pages/{id}/content` requires you to target individual elements by their `data-id` attributes, which is fiddly to expose as a useful tool. Tracked for a future release — see the roadmap below. _(coming soon)_
 - **No section or notebook creation in v1.** You can create pages inside existing sections; create sections/notebooks via the OneNote UI for now. _(coming soon)_
 - **No attachment / image upload in v1.** Pages with embedded binary content require multipart bodies. _(coming soon)_
+- **`update_page` targets are raw `data-id` selectors.** To edit a specific element, read the page first and pull the `data-id` attribute out of the returned HTML. Higher-level selectors (e.g. "the section under heading X") are tracked for a follow-up.
 - **Search latency.** Microsoft Graph's `$search` against `/me/onenote/pages` can take a few seconds against large notebooks; the server retries on 429s with exponential backoff.
 
 ---
@@ -176,7 +177,7 @@ Commits follow [Conventional Commits](https://www.conventionalcommits.org/) (`fe
 
 ### Roadmap
 
-- [ ] `update_page` — in-place edits via Graph's `PATCH` syntax
+- [x] `update_page` — in-place edits via Graph's `PATCH` syntax
 - [ ] `create_section` / `create_notebook`
 - [ ] Image and attachment upload (multipart create_page)
 - [ ] Section group support

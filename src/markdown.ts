@@ -57,3 +57,10 @@ ${html}
 };
 
 export const htmlToMarkdown = (html: string): string => turndown.turndown(html);
+
+/**
+ * Convert Markdown into an HTML fragment (no <html>/<body> wrapper) for use
+ * as the `content` of an `update_page` PATCH command.
+ */
+export const markdownToHtmlFragment = (markdown: string): string =>
+  (marked.parse(markdown, { async: false }) as string).trim();

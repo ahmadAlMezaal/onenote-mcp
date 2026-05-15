@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { GraphError, graphRequest, paginate } from '../../src/graph/client.js';
-import { searchPages } from '../../src/graph/pages.js';
+import { searchPages, updatePage } from '../../src/graph/pages.js';
 
 vi.mock('../../src/auth/index.js', () => ({
   getAccessToken: vi.fn(async () => 'fake-access-token'),
@@ -136,6 +136,31 @@ describe('searchPages', () => {
 
     const results = await searchPages({ query: 'hello', limit: 2 });
     expect(results.map((r) => r.id)).toEqual(['1', '2']);
+  });
+});
+
+describe('updatePage', () => {
+  it('PATCHes /content with a JSON command array', async () => {
+    fetchMock.mockResolvedValueOnce(new Response(null, { status: 204 }));
+
+    await updatePage('page-123', [
+      { target: 'body', action: 'append', content: '<p>hi</p>' },
+      { target: '#abc', action: 'delete' },
+    ]);
+
+    const [url, init] = fetchMock.mock.calls[0]!;
+    expect(String(url)).toBe(
+      'https://graph.microsoft.com/v1.0/me/onenote/pages/page-123/content',
+    );
+    expect((init as RequestInit).method).toBe('PATCH');
+    expect((init as RequestInit).headers).toMatchObject({
+      'Content-Type': 'application/json',
+    });
+    // Targets are sent without a leading `#`. The caller's `#abc` becomes `abc`.
+    expect(JSON.parse((init as RequestInit).body as string)).toEqual([
+      { target: 'body', action: 'append', content: '<p>hi</p>' },
+      { target: 'abc', action: 'delete' },
+    ]);
   });
 });
 

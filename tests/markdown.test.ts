@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest';
 import {
   htmlToMarkdown,
   htmlToOneNotePage,
+  markdownToHtmlFragment,
   markdownToOneNoteHtml,
 } from '../src/markdown.js';
 
@@ -33,6 +34,21 @@ describe('htmlToOneNotePage', () => {
   it('passes through full HTML documents unchanged', () => {
     const input = '<html><head><title>X</title></head><body><p>x</p></body></html>';
     expect(htmlToOneNotePage(input, 'ignored')).toBe(input);
+  });
+});
+
+describe('markdownToHtmlFragment', () => {
+  it('returns HTML without a document wrapper', () => {
+    const html = markdownToHtmlFragment('## Hello\n\n- one\n- two');
+    expect(html).toContain('<h2>Hello</h2>');
+    expect(html).toContain('<li>one</li>');
+    expect(html).not.toContain('<html');
+    expect(html).not.toContain('<body');
+  });
+
+  it('trims trailing whitespace that marked appends', () => {
+    const html = markdownToHtmlFragment('Hello');
+    expect(html).toBe('<p>Hello</p>');
   });
 });
 

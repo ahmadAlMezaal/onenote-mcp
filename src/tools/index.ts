@@ -4,6 +4,7 @@ import { register as registerListSections } from './listSections.js';
 import { register as registerSearchPages } from './searchPages.js';
 import { register as registerReadPage } from './readPage.js';
 import { register as registerCreatePage } from './createPage.js';
+import { register as registerUpdatePage } from './updatePage.js';
 import { register as registerDeletePage } from './deletePage.js';
 
 export const registerAllTools = (server: McpServer): void => {
@@ -12,5 +13,6 @@ export const registerAllTools = (server: McpServer): void => {
   registerSearchPages(server);
   registerReadPage(server);
   registerCreatePage(server);
+  registerUpdatePage(server);
   registerDeletePage(server);
 };
