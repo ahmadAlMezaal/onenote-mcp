@@ -1,25 +1,34 @@
 import { readFile } from 'node:fs/promises';
-import { resolve } from 'node:path';
+import { relative, resolve, sep } from 'node:path';
 import { z } from 'zod';
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { createPage, type CreatePageAttachment } from '../graph/pages.js';
 import { htmlToOneNotePage, markdownToOneNoteHtml } from '../markdown.js';
+
+const PART_NAME_REGEX = /^[A-Za-z0-9._-]+$/;
+const BASE64_REGEX = /^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/;
 
 const attachmentSchema = z
   .object({
     name: z
       .string()
       .min(1)
+      .regex(PART_NAME_REGEX, 'must be alphanumeric, dots, underscores, or hyphens')
       .describe(
-        'Unique part name. Reference it from the content as `name:<name>` (e.g. `<img src="name:diagram1" />`).',
+        'Unique part name (alphanumeric/dot/underscore/hyphen). Reference it from the content as `name:<name>` (e.g. `<img src="name:diagram1" />`).',
       ),
     contentType: z.string().min(1).describe('MIME type, e.g. `image/png`, `application/pdf`.'),
     path: z
       .string()
+      .min(1)
       .optional()
-      .describe('Local file path (resolved against the server\'s working directory).'),
+      .describe(
+        "Local file path, relative or absolute. Must resolve inside the server's working directory (path traversal is rejected).",
+      ),
     data: z
       .string()
+      .min(1)
+      .regex(BASE64_REGEX, 'must be valid base64')
       .optional()
       .describe('Base64-encoded bytes. Use this OR `path`.'),
   })
@@ -27,6 +36,22 @@ const attachmentSchema = z
     message: 'Provide exactly one of `path` or `data`.',
     path: ['path'],
   });
+
+export const readLocalAttachment = async (rawPath: string): Promise<Uint8Array> => {
+  const cwd = process.cwd();
+  const full = resolve(cwd, rawPath);
+  // Reject paths that escape cwd via "..", an absolute path elsewhere, or symlink
+  // targets. This is critical when the tool is invoked by an LLM that could be
+  // coaxed into exfiltrating local secrets (~/.ssh/id_rsa, /etc/passwd, …) by
+  // attaching them to a OneNote page.
+  const rel = relative(cwd, full);
+  if (rel.startsWith('..') || rel.startsWith(`..${sep}`)) {
+    throw new Error(
+      `Attachment path "${rawPath}" resolves outside the working directory; refusing to read.`,
+    );
+  }
+  return new Uint8Array(await readFile(full));
+};
 
 const inputSchema = {
   sectionId: z.string().min(1).describe('Section ID to create the page in.'),
@@ -52,7 +77,7 @@ const loadAttachments = (
   Promise.all(
     parts.map(async (a) => {
       const data = a.path
-        ? new Uint8Array(await readFile(resolve(a.path)))
+        ? await readLocalAttachment(a.path)
         : new Uint8Array(Buffer.from(a.data ?? '', 'base64'));
       return { name: a.name, contentType: a.contentType, data };
     }),

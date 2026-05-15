@@ -215,6 +215,17 @@ describe('createPage', () => {
     expect((init as RequestInit).body).toBe('<html><body>hi</body></html>');
   });
 
+  it('accepts a path-only attachment object as long as bytes are pre-loaded', async () => {
+    // Path resolution lives in the tool layer; the graph wrapper accepts bytes.
+    fetchMock.mockResolvedValueOnce(jsonResponse({ id: 'p3', title: 'Hi' }));
+    await createPage({
+      sectionId: 's',
+      html: '<html><body><img src="name:x"/></body></html>',
+      attachments: [{ name: 'x', contentType: 'image/png', data: new Uint8Array([1, 2]) }],
+    });
+    expect((fetchMock.mock.calls[0]![1] as RequestInit).body).toBeInstanceOf(FormData);
+  });
+
   it('builds a multipart/form-data body when attachments are present', async () => {
     fetchMock.mockResolvedValueOnce(jsonResponse({ id: 'p2', title: 'With image' }));
     await createPage({
