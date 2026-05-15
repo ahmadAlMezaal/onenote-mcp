@@ -46,7 +46,7 @@ Keep the subject under 72 characters. Wrap the body at ~80.
 ## Adding a new tool
 
 1. Add a typed Graph wrapper in `src/graph/`.
-2. Add a tool file in `src/tools/` exporting `register(server)`.
+2. Add a tool file in `src/tools/` exporting `register(server)`. Import the wrapper via the `@/*` alias (e.g. `import { foo } from '@/graph/foo.js'`) — cross-directory imports use the alias, sibling imports stay `./foo.js`.
 3. Wire it into `src/tools/index.ts`.
 4. Update the tool reference table in `README.md`.
 5. Add tests for any non-trivial logic (input validation, format handling, etc.).

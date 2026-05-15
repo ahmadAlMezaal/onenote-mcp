@@ -26,6 +26,7 @@ Project conventions for Claude Code (and any other AI assistant working in this 
 | Conventional commits (`feat:`, `fix:`, `chore:`, `docs:`, `refactor:`, `test:`, `ci:`) | Readable history, release tooling | Convention |
 | Each tool in its own file under `src/tools/` exporting `register(server)` | Discoverability | Convention |
 | Tools never call `fetch` directly — they go through `src/graph/*` | Single retry / auth / error-shaping path | Convention |
+| Cross-directory imports use the `@/*` alias (`@/graph/pages.js`), not `../../graph/pages.js`. Sibling imports stay `./foo.js`. | Readability, refactor-safe | `tsconfig.json` paths + `tsc-alias` at build, `vitest.config.ts` for tests |
 | Default to writing **no comments**. Only the WHY when non-obvious. | Self-documenting code | Convention |
 | Don't add error handling, fallbacks, or validation for cases that can't happen | Trust internal contracts | Convention |
 
@@ -69,7 +70,7 @@ The end-to-end auth flow is documented in [`README.md`](README.md#1-register-a-m
 ## Adding a new tool
 
 1. Add a typed Graph wrapper in `src/graph/*.ts`. No `fetch` calls outside this directory.
-2. Add `src/tools/<toolName>.ts` exporting `const register = (server: McpServer): void => { server.registerTool(...) }`.
+2. Add `src/tools/<toolName>.ts` exporting `const register = (server: McpServer): void => { server.registerTool(...) }`. Import the Graph wrapper as `from '@/graph/<resource>.js'`.
 3. Wire it into `src/tools/index.ts`.
 4. Add a row to the tool reference table in `README.md`.
 5. Add tests for any non-trivial logic (parsing, format conversion, validation).

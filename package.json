@@ -21,7 +21,7 @@
   },
   "packageManager": "yarn@1.22.22",
   "scripts": {
-    "build": "tsc",
+    "build": "tsc && tsc-alias",
     "dev": "tsc --watch",
     "start": "node dist/cli.js",
     "test": "vitest run",
@@ -66,6 +66,7 @@
     "@types/node": "^22.9.0",
     "@types/turndown": "^5.0.5",
     "eslint": "^9.14.0",
+    "tsc-alias": "^1.8.10",
     "tsx": "^4.19.2",
     "typescript": "^5.6.3",
     "typescript-eslint": "^8.13.0",

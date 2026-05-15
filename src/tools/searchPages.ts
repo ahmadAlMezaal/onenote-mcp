@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
-import { searchPages } from '../graph/pages.js';
+import { searchPages } from '@/graph/pages.js';
 
 const inputSchema = {
   query: z.string().min(1).describe('Full-text search query against page titles and content.'),

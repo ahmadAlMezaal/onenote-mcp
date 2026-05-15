@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
-import { createSectionGroup } from '../graph/sectionGroups.js';
+import { createSectionGroup } from '@/graph/sectionGroups.js';
 
 const inputSchema = {
   notebookId: z

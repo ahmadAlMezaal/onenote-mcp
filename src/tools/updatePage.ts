@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
-import { updatePage, type UpdatePageCommand } from '../graph/pages.js';
-import { markdownToHtmlFragment } from '../markdown.js';
+import { updatePage, type UpdatePageCommand } from '@/graph/pages.js';
+import { markdownToHtmlFragment } from '@/markdown.js';
 
 const operationSchema = z
   .object({
