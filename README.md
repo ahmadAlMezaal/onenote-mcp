@@ -169,12 +169,27 @@ yarn build
 yarn test
 ```
 
-- `yarn typecheck` — `tsc --noEmit`
+- `yarn typecheck` — `tsc --noEmit` (covers `src/` + `scripts/`)
 - `yarn lint` — ESLint
-- `yarn test` — Vitest
+- `yarn test` — Vitest (unit tests, mocked Graph)
 - `yarn dev` — TypeScript in watch mode
 
 > Use Yarn (Classic), not npm. The repo's lockfile is `yarn.lock` — `package-lock.json` should not be committed.
+
+### End-to-end smoke test
+
+`scripts/smoke.ts` exercises every shipped tool against a real OneNote account. It's not in CI — needs real credentials.
+
+```sh
+# One-time: register an Entra app (see Quick start above) and sign in
+ONENOTE_MCP_CLIENT_ID=<your-client-id> yarn build
+ONENOTE_MCP_CLIENT_ID=<your-client-id> node dist/cli.js login
+
+# Then run the smoke test
+ONENOTE_MCP_CLIENT_ID=<your-client-id> yarn smoke
+```
+
+It's idempotent: reuses (or creates) a notebook called **OneNote MCP Smoke Test**, walks through 12 steps covering auth, list/search/read/create/update/delete and the multipart attachment path, and cleans up the pages it creates. Sections and section groups are left behind for the next run.
 
 If you're using an AI coding assistant (Claude Code, Cursor, etc.), see [`CLAUDE.md`](CLAUDE.md) for project conventions, the arrow-function rule, and the tool-authoring checklist.
 
