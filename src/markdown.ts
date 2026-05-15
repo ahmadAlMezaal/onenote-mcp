@@ -27,7 +27,7 @@ export function markdownToOneNoteHtml(markdown: string, title: string): string {
   const bodyHtml = marked.parse(markdown, { async: false }) as string;
   const safeTitle = escapeHtml(title);
   return `<!DOCTYPE html>
-<html>
+<html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <title>${safeTitle}</title>
     <meta name="created" content="${new Date().toISOString()}" />
@@ -46,7 +46,7 @@ export function htmlToOneNotePage(html: string, title: string): string {
   if (/<html[\s>]/i.test(html)) return html;
   const safeTitle = escapeHtml(title);
   return `<!DOCTYPE html>
-<html>
+<html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <title>${safeTitle}</title>
     <meta name="created" content="${new Date().toISOString()}" />

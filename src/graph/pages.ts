@@ -18,7 +18,7 @@ export async function searchPages(options: SearchPagesOptions): Promise<Page[]> 
   // page title + content. Quoting the term keeps it safe across odata.
   const escaped = query.replace(/"/g, '\\"');
   const top = Math.max(1, Math.min(limit, 100));
-  return paginate<Page>('/me/onenote/pages', {
+  const pages = await paginate<Page>('/me/onenote/pages', {
     query: {
       $search: `"${escaped}"`,
       $select: PAGE_SELECT,
@@ -26,6 +26,8 @@ export async function searchPages(options: SearchPagesOptions): Promise<Page[]> 
       $top: top,
     },
   });
+  // $top is a page size, not a total cap — paginate follows nextLinks until exhausted.
+  return pages.slice(0, limit);
 }
 
 export async function getPage(pageId: string): Promise<Page> {

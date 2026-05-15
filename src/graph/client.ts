@@ -115,7 +115,10 @@ export async function graphRequest<T = unknown>(
       if (parse === 'text') {
         return (await response.text()) as T;
       }
-      return (await response.json()) as T;
+      // Read as text first so empty 200 bodies don't blow up JSON.parse.
+      const text = await response.text();
+      if (text.length === 0) return undefined as T;
+      return JSON.parse(text) as T;
     }
 
     const err = await shapeError(response);

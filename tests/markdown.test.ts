@@ -12,6 +12,8 @@ describe('markdownToOneNoteHtml', () => {
     expect(html).toContain('<title>My Page</title>');
     expect(html).toContain('<h1>Hello</h1>');
     expect(html).toContain('<strong>bold</strong>');
+    // OneNote requires the XHTML namespace on the root element.
+    expect(html).toContain('<html xmlns="http://www.w3.org/1999/xhtml">');
   });
 
   it('escapes HTML entities in the title', () => {
@@ -25,6 +27,7 @@ describe('htmlToOneNotePage', () => {
     const out = htmlToOneNotePage('<p>hi</p>', 'T');
     expect(out).toContain('<title>T</title>');
     expect(out).toContain('<p>hi</p>');
+    expect(out).toContain('<html xmlns="http://www.w3.org/1999/xhtml">');
   });
 
   it('passes through full HTML documents unchanged', () => {

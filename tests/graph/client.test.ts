@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { GraphError, graphRequest, paginate } from '../../src/graph/client.js';
+import { searchPages } from '../../src/graph/pages.js';
 
 vi.mock('../../src/auth/index.js', () => ({
   getAccessToken: vi.fn(async () => 'fake-access-token'),
@@ -64,6 +65,14 @@ describe('graphRequest', () => {
     expect(html).toBe('<html>hi</html>');
   });
 
+  it('returns undefined for an empty 200 body instead of throwing on JSON.parse', async () => {
+    fetchMock.mockResolvedValueOnce(
+      new Response('', { status: 200, headers: { 'Content-Type': 'application/json' } }),
+    );
+    const result = await graphRequest('/me/onenote/whatever');
+    expect(result).toBeUndefined();
+  });
+
   it('returns undefined for 204 No Content', async () => {
     fetchMock.mockResolvedValueOnce(new Response(null, { status: 204 }));
     const result = await graphRequest('/me/onenote/pages/p1', {
@@ -109,6 +118,25 @@ describe('graphRequest', () => {
     expect(err).toBeInstanceOf(GraphError);
     expect(err.status).toBe(400);
     expect(err.message).toContain('plain text error');
+  });
+});
+
+describe('searchPages', () => {
+  it('slices results down to the caller-supplied limit', async () => {
+    // Graph's $top is a page size, not a total cap, so paginate may return more
+    // than `limit` rows. searchPages should still respect the caller's limit.
+    const makePage = (id: string) => ({ id, title: `t${id}` });
+    fetchMock
+      .mockResolvedValueOnce(
+        jsonResponse({
+          value: ['1', '2', '3'].map(makePage),
+          '@odata.nextLink': 'https://graph.microsoft.com/v1.0/x?$skiptoken=a',
+        }),
+      )
+      .mockResolvedValueOnce(jsonResponse({ value: ['4', '5'].map(makePage) }));
+
+    const results = await searchPages({ query: 'hello', limit: 2 });
+    expect(results.map((r) => r.id)).toEqual(['1', '2']);
   });
 });
 
