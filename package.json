@@ -1,5 +1,5 @@
 {
-  "name": "onenote-mcp",
+  "name": "@atomiclabs/onenote-mcp",
   "version": "0.1.0",
   "description": "MCP server for Microsoft OneNote — read, search, create, and delete pages via Microsoft Graph.",
   "type": "module",
@@ -7,6 +7,9 @@
   "types": "./dist/index.d.ts",
   "bin": {
     "onenote-mcp": "./dist/cli.js"
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "files": [
     "dist",

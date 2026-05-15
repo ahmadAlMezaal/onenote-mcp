@@ -1,6 +1,6 @@
-# onenote-mcp
+# @atomiclabs/onenote-mcp
 
-[![npm version](https://img.shields.io/npm/v/onenote-mcp.svg)](https://www.npmjs.com/package/onenote-mcp)
+[![npm version](https://img.shields.io/npm/v/@atomiclabs/onenote-mcp.svg)](https://www.npmjs.com/package/@atomiclabs/onenote-mcp)
 [![CI](https://github.com/ahmadAlMezaal/onenote-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/ahmadAlMezaal/onenote-mcp/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
@@ -57,7 +57,7 @@ Back on the app's **Overview** page, copy the **Application (client) ID**. You'l
 ### 2. Sign in
 
 ```sh
-ONENOTE_MCP_CLIENT_ID=<your-app-client-id> npx onenote-mcp login
+ONENOTE_MCP_CLIENT_ID=<your-app-client-id> npx @atomiclabs/onenote-mcp login
 ```
 
 This prints a code and a URL like:
@@ -72,7 +72,7 @@ Open the URL, paste the code, sign in with the Microsoft account whose OneNote y
 To sign out:
 
 ```sh
-npx onenote-mcp logout
+npx @atomiclabs/onenote-mcp logout
 ```
 
 ### 3. Wire it into your MCP client
@@ -86,7 +86,7 @@ Edit `~/Library/Application Support/Claude/claude_desktop_config.json` (macOS) o
   "mcpServers": {
     "onenote": {
       "command": "npx",
-      "args": ["-y", "onenote-mcp"],
+      "args": ["-y", "@atomiclabs/onenote-mcp"],
       "env": {
         "ONENOTE_MCP_CLIENT_ID": "your-app-client-id"
       }
@@ -106,7 +106,7 @@ Add to `~/.cursor/mcp.json`:
   "mcpServers": {
     "onenote": {
       "command": "npx",
-      "args": ["-y", "onenote-mcp"],
+      "args": ["-y", "@atomiclabs/onenote-mcp"],
       "env": {
         "ONENOTE_MCP_CLIENT_ID": "your-app-client-id"
       }
@@ -117,7 +117,7 @@ Add to `~/.cursor/mcp.json`:
 
 #### Anything else
 
-Any MCP-compatible client that supports stdio servers will work. Run `onenote-mcp` with `ONENOTE_MCP_CLIENT_ID` set in the environment.
+Any MCP-compatible client that supports stdio servers will work. Run `npx @atomiclabs/onenote-mcp` with `ONENOTE_MCP_CLIENT_ID` set in the environment.
 
 ---
 
