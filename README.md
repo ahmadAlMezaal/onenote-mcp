@@ -172,7 +172,7 @@ yarn test
 - `yarn typecheck` — `tsc --noEmit` (covers `src/` + `scripts/`)
 - `yarn lint` — ESLint
 - `yarn test` — Vitest (unit tests, mocked Graph)
-- `yarn dev` — TypeScript in watch mode
+- `yarn dev` — incremental rebuild on save (`tsc --watch` + `tsc-alias --watch`); `dist/` stays runnable
 
 > Use Yarn (Classic), not npm. The repo's lockfile is `yarn.lock` — `package-lock.json` should not be committed.
 
