@@ -8,14 +8,18 @@ import { register as registerUpdatePage } from './updatePage.js';
 import { register as registerDeletePage } from './deletePage.js';
 import { register as registerCreateNotebook } from './createNotebook.js';
 import { register as registerCreateSection } from './createSection.js';
+import { register as registerListSectionGroups } from './listSectionGroups.js';
+import { register as registerCreateSectionGroup } from './createSectionGroup.js';
 
 export const registerAllTools = (server: McpServer): void => {
   registerListNotebooks(server);
   registerListSections(server);
+  registerListSectionGroups(server);
   registerSearchPages(server);
   registerReadPage(server);
   registerCreateNotebook(server);
   registerCreateSection(server);
+  registerCreateSectionGroup(server);
   registerCreatePage(server);
   registerUpdatePage(server);
   registerDeletePage(server);
