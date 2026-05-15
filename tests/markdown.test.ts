@@ -4,7 +4,7 @@ import {
   htmlToOneNotePage,
   markdownToHtmlFragment,
   markdownToOneNoteHtml,
-} from '../src/markdown.js';
+} from '@/markdown.js';
 
 describe('markdownToOneNoteHtml', () => {
   it('wraps converted markdown in a full HTML document with the title', () => {

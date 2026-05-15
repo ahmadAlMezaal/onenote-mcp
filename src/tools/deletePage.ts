@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
-import { deletePage } from '../graph/pages.js';
+import { deletePage } from '@/graph/pages.js';
 
 const inputSchema = {
   pageId: z.string().min(1).describe('OneNote page ID to delete. This action is irreversible.'),

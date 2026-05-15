@@ -1,9 +1,9 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { GraphError, graphRequest, paginate } from '../../src/graph/client.js';
-import { createPage, searchPages, updatePage } from '../../src/graph/pages.js';
-import { createNotebook } from '../../src/graph/notebooks.js';
-import { createSection } from '../../src/graph/sections.js';
-import { createSectionGroup, listSectionGroups } from '../../src/graph/sectionGroups.js';
+import { GraphError, graphRequest, paginate } from '@/graph/client.js';
+import { createPage, searchPages, updatePage } from '@/graph/pages.js';
+import { createNotebook } from '@/graph/notebooks.js';
+import { createSection } from '@/graph/sections.js';
+import { createSectionGroup, listSectionGroups } from '@/graph/sectionGroups.js';
 
 vi.mock('../../src/auth/index.js', () => ({
   getAccessToken: vi.fn(async () => 'fake-access-token'),

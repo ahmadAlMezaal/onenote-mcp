@@ -1,5 +1,5 @@
 import { PublicClientApplication, type Configuration, LogLevel } from '@azure/msal-node';
-import { getAuthority, getClientId } from '../config.js';
+import { getAuthority, getClientId } from '@/config.js';
 import { createFileCachePlugin } from './tokenCache.js';
 
 let cachedClient: PublicClientApplication | undefined;

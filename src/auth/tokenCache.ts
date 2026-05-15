@@ -1,7 +1,7 @@
 import { mkdir, readFile, writeFile, chmod, stat } from 'node:fs/promises';
 import { dirname } from 'node:path';
 import type { ICachePlugin, TokenCacheContext } from '@azure/msal-node';
-import { getTokenCachePath } from '../config.js';
+import { getTokenCachePath } from '@/config.js';
 
 const FILE_MODE = 0o600;
 const DIR_MODE = 0o700;

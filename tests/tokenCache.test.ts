@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { mkdtemp, rm, stat, readFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { createFileCachePlugin } from '../src/auth/tokenCache.js';
+import { createFileCachePlugin } from '@/auth/tokenCache.js';
 
 const makeContext = (initial: string) => {
   let serialized = initial;

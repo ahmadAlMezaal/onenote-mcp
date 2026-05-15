@@ -11,13 +11,13 @@
  * behind for the next run.
  */
 
-import { getAccessToken } from '../src/auth/index.js';
-import { createNotebook, listNotebooks } from '../src/graph/notebooks.js';
-import { createSection, listSections } from '../src/graph/sections.js';
+import { getAccessToken } from '@/auth/index.js';
+import { createNotebook, listNotebooks } from '@/graph/notebooks.js';
+import { createSection, listSections } from '@/graph/sections.js';
 import {
   createSectionGroup,
   listSectionGroups,
-} from '../src/graph/sectionGroups.js';
+} from '@/graph/sectionGroups.js';
 import {
   createPage,
   deletePage,
@@ -25,9 +25,9 @@ import {
   getPageContent,
   searchPages,
   updatePage,
-} from '../src/graph/pages.js';
-import { htmlToMarkdown, markdownToOneNoteHtml } from '../src/markdown.js';
-import type { Notebook, Section, SectionGroup } from '../src/graph/types.js';
+} from '@/graph/pages.js';
+import { htmlToMarkdown, markdownToOneNoteHtml } from '@/markdown.js';
+import type { Notebook, Section, SectionGroup } from '@/graph/types.js';
 
 const NOTEBOOK_NAME = 'OneNote MCP Smoke Test';
 const SECTION_NAME = 'Smoke';

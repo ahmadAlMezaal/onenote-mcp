@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { mkdtemp, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { readLocalAttachment } from '../../src/tools/createPage.js';
+import { readLocalAttachment } from '@/tools/createPage.js';
 
 describe('readLocalAttachment', () => {
   let dir: string;

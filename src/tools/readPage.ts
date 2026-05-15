@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
-import { getPage, getPageContent } from '../graph/pages.js';
-import { htmlToMarkdown } from '../markdown.js';
+import { getPage, getPageContent } from '@/graph/pages.js';
+import { htmlToMarkdown } from '@/markdown.js';
 
 const inputSchema = {
   pageId: z.string().min(1).describe('OneNote page ID to fetch.'),

@@ -1,6 +1,6 @@
 import { unlink } from 'node:fs/promises';
 import type { AuthenticationResult, AccountInfo } from '@azure/msal-node';
-import { SCOPES, getTokenCachePath } from '../config.js';
+import { SCOPES, getTokenCachePath } from '@/config.js';
 import { getMsalClient } from './msal.js';
 
 export type DeviceCodeNotifier = (info: {

@@ -1,5 +1,5 @@
-import { GRAPH_BASE_URL } from '../config.js';
-import { getAccessToken } from '../auth/index.js';
+import { GRAPH_BASE_URL } from '@/config.js';
+import { getAccessToken } from '@/auth/index.js';
 
 export class GraphError extends Error {
   constructor(

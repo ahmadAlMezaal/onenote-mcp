@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
-import { createNotebook } from '../graph/notebooks.js';
+import { createNotebook } from '@/graph/notebooks.js';
 
 const inputSchema = {
   name: z
