@@ -125,13 +125,15 @@ Any MCP-compatible client that supports stdio servers will work. Run `npx @atomi
 
 | Tool             | Description                                                     | Key inputs                                       |
 | ---------------- | --------------------------------------------------------------- | ------------------------------------------------ |
-| `list_notebooks` | Lists all OneNote notebooks for the signed-in user.             | _(none)_                                         |
-| `list_sections`  | Lists sections, optionally scoped to a single notebook.         | `notebookId?`                                    |
-| `search_pages`   | Full-text search across pages (title + content).                | `query`, `limit?`                                |
-| `read_page`      | Returns page metadata + content (HTML or Markdown).             | `pageId`, `format?` (`html` \| `markdown`)       |
-| `create_page`    | Creates a page in a section. Accepts Markdown (default) or HTML. | `sectionId`, `title`, `content`, `format?`       |
-| `update_page`    | Applies edits to a page: append/prepend/insert/replace/delete elements. | `pageId`, `operations[]`                  |
-| `delete_page`    | Permanently deletes a page. **Irreversible.**                   | `pageId`                                         |
+| `list_notebooks`  | Lists all OneNote notebooks for the signed-in user.             | _(none)_                                         |
+| `list_sections`   | Lists sections, optionally scoped to a single notebook.         | `notebookId?`                                    |
+| `search_pages`    | Full-text search across pages (title + content).                | `query`, `limit?`                                |
+| `read_page`       | Returns page metadata + content (HTML or Markdown).             | `pageId`, `format?` (`html` \| `markdown`)       |
+| `create_notebook` | Creates a new top-level notebook.                               | `name`                                           |
+| `create_section`  | Creates a section inside a notebook.                            | `notebookId`, `name`                             |
+| `create_page`     | Creates a page in a section. Accepts Markdown (default) or HTML. | `sectionId`, `title`, `content`, `format?`      |
+| `update_page`     | Applies edits to a page: append/prepend/insert/replace/delete elements. | `pageId`, `operations[]`                 |
+| `delete_page`     | Permanently deletes a page. **Irreversible.**                   | `pageId`                                         |
 
 ---
 
@@ -147,8 +149,8 @@ Any MCP-compatible client that supports stdio servers will work. Run `npx @atomi
 
 ## Known limitations
 
-- **No section or notebook creation in v1.** You can create pages inside existing sections; create sections/notebooks via the OneNote UI for now. _(coming soon)_
 - **No attachment / image upload in v1.** Pages with embedded binary content require multipart bodies. _(coming soon)_
+- **No section group creation.** OneNote supports nested section groups; v1 can list sections inside them but can't create groups themselves. _(coming soon)_
 - **`update_page` targets are raw `data-id` selectors.** To edit a specific element, read the page first and pull the `data-id` attribute out of the returned HTML. Higher-level selectors (e.g. "the section under heading X") are tracked for a follow-up.
 - **Search latency.** Microsoft Graph's `$search` against `/me/onenote/pages` can take a few seconds against large notebooks; the server retries on 429s with exponential backoff.
 
@@ -178,7 +180,7 @@ Commits follow [Conventional Commits](https://www.conventionalcommits.org/) (`fe
 ### Roadmap
 
 - [x] `update_page` — in-place edits via Graph's `PATCH` syntax
-- [ ] `create_section` / `create_notebook`
+- [x] `create_section` / `create_notebook`
 - [ ] Image and attachment upload (multipart create_page)
 - [ ] Section group support
 - [ ] Resource-style page browsing (alongside the tool surface)

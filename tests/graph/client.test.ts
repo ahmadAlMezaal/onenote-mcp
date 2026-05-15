@@ -1,6 +1,8 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { GraphError, graphRequest, paginate } from '../../src/graph/client.js';
 import { searchPages, updatePage } from '../../src/graph/pages.js';
+import { createNotebook } from '../../src/graph/notebooks.js';
+import { createSection } from '../../src/graph/sections.js';
 
 vi.mock('../../src/auth/index.js', () => ({
   getAccessToken: vi.fn(async () => 'fake-access-token'),
@@ -161,6 +163,36 @@ describe('updatePage', () => {
       { target: 'body', action: 'append', content: '<p>hi</p>' },
       { target: 'abc', action: 'delete' },
     ]);
+  });
+});
+
+describe('createNotebook', () => {
+  it('POSTs displayName to /me/onenote/notebooks', async () => {
+    fetchMock.mockResolvedValueOnce(jsonResponse({ id: 'n1', displayName: 'My Book' }));
+    const notebook = await createNotebook('My Book');
+    expect(notebook.id).toBe('n1');
+
+    const [url, init] = fetchMock.mock.calls[0]!;
+    expect(String(url)).toBe('https://graph.microsoft.com/v1.0/me/onenote/notebooks');
+    expect((init as RequestInit).method).toBe('POST');
+    expect(JSON.parse((init as RequestInit).body as string)).toEqual({
+      displayName: 'My Book',
+    });
+  });
+});
+
+describe('createSection', () => {
+  it('POSTs displayName to the notebook sections endpoint', async () => {
+    fetchMock.mockResolvedValueOnce(jsonResponse({ id: 's1', displayName: 'Work' }));
+    const section = await createSection('nb-abc', 'Work');
+    expect(section.id).toBe('s1');
+
+    const [url, init] = fetchMock.mock.calls[0]!;
+    expect(String(url)).toBe(
+      'https://graph.microsoft.com/v1.0/me/onenote/notebooks/nb-abc/sections',
+    );
+    expect((init as RequestInit).method).toBe('POST');
+    expect(JSON.parse((init as RequestInit).body as string)).toEqual({ displayName: 'Work' });
   });
 });
 

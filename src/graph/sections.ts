@@ -1,4 +1,4 @@
-import { paginate } from './client.js';
+import { graphRequest, paginate } from './client.js';
 import type { Section } from './types.js';
 
 const SECTION_SELECT =
@@ -16,3 +16,13 @@ export const listSections = (notebookId?: string): Promise<Section[]> => {
     },
   });
 };
+
+export const createSection = (notebookId: string, name: string): Promise<Section> =>
+  graphRequest<Section>(
+    `/me/onenote/notebooks/${encodeURIComponent(notebookId)}/sections`,
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ displayName: name }),
+    },
+  );
