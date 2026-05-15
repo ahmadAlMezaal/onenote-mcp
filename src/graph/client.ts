@@ -27,7 +27,7 @@ export interface RequestOptions {
 const MAX_RETRIES = 4;
 const BASE_BACKOFF_MS = 500;
 
-function buildUrl(path: string, query?: RequestOptions['query']): string {
+const buildUrl = (path: string, query?: RequestOptions['query']): string => {
   const url = path.startsWith('http')
     ? new URL(path)
     : new URL(`${GRAPH_BASE_URL}${path.startsWith('/') ? path : `/${path}`}`);
@@ -38,13 +38,12 @@ function buildUrl(path: string, query?: RequestOptions['query']): string {
     }
   }
   return url.toString();
-}
+};
 
-function isRetryable(status: number): boolean {
-  return status === 429 || status === 503 || status === 504 || status === 502;
-}
+const isRetryable = (status: number): boolean =>
+  status === 429 || status === 503 || status === 504 || status === 502;
 
-function backoffDelay(attempt: number, retryAfterHeader: string | null): number {
+const backoffDelay = (attempt: number, retryAfterHeader: string | null): number => {
   if (retryAfterHeader) {
     const retryAfterSec = Number(retryAfterHeader);
     if (Number.isFinite(retryAfterSec) && retryAfterSec >= 0) {
@@ -54,13 +53,12 @@ function backoffDelay(attempt: number, retryAfterHeader: string | null): number 
   // Exponential backoff with full jitter, capped at 8s.
   const exp = Math.min(BASE_BACKOFF_MS * 2 ** attempt, 8_000);
   return Math.floor(Math.random() * exp);
-}
+};
 
-function sleep(ms: number): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
+const sleep = (ms: number): Promise<void> =>
+  new Promise((resolve) => setTimeout(resolve, ms));
 
-async function shapeError(response: Response): Promise<GraphError> {
+const shapeError = async (response: Response): Promise<GraphError> => {
   const requestId = response.headers.get('request-id') ?? undefined;
   let code: string | undefined;
   let message = `Graph request failed with ${response.status} ${response.statusText}`;
@@ -85,12 +83,12 @@ async function shapeError(response: Response): Promise<GraphError> {
     // Body unreadable — keep the default message.
   }
   return new GraphError(message, response.status, code, requestId);
-}
+};
 
-export async function graphRequest<T = unknown>(
+export const graphRequest = async <T = unknown>(
   path: string,
   options: RequestOptions = {},
-): Promise<T> {
+): Promise<T> => {
   const { method = 'GET', query, headers = {}, body = null, accept, parse = 'json' } = options;
   const url = buildUrl(path, query);
   const token = await getAccessToken();
@@ -132,14 +130,17 @@ export async function graphRequest<T = unknown>(
   }
 
   throw lastError ?? new GraphError('Graph request failed after retries', 0);
-}
+};
 
 interface PageResponse<T> {
   value: T[];
   '@odata.nextLink'?: string;
 }
 
-export async function paginate<T>(path: string, options: RequestOptions = {}): Promise<T[]> {
+export const paginate = async <T>(
+  path: string,
+  options: RequestOptions = {},
+): Promise<T[]> => {
   const all: T[] = [];
   let next: string | undefined = path;
   let pageOptions: RequestOptions | undefined = options;
@@ -151,4 +152,4 @@ export async function paginate<T>(path: string, options: RequestOptions = {}): P
     pageOptions = undefined;
   }
   return all;
-}
+};

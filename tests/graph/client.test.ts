@@ -9,13 +9,12 @@ vi.mock('../../src/auth/index.js', () => ({
 const fetchMock = vi.fn();
 const originalFetch = globalThis.fetch;
 
-function jsonResponse(body: unknown, init: ResponseInit = {}) {
-  return new Response(JSON.stringify(body), {
+const jsonResponse = (body: unknown, init: ResponseInit = {}): Response =>
+  new Response(JSON.stringify(body), {
     status: 200,
     headers: { 'Content-Type': 'application/json' },
     ...init,
   });
-}
 
 beforeEach(() => {
   fetchMock.mockReset();

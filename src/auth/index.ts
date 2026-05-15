@@ -14,13 +14,15 @@ const DEFAULT_NOTIFIER: DeviceCodeNotifier = ({ message }) => {
   process.stderr.write(`${message}\n`);
 };
 
-async function getCachedAccount(): Promise<AccountInfo | undefined> {
+const getCachedAccount = async (): Promise<AccountInfo | undefined> => {
   const cache = getMsalClient().getTokenCache();
   const accounts = await cache.getAllAccounts();
   return accounts[0];
-}
+};
 
-async function acquireTokenSilently(account: AccountInfo): Promise<AuthenticationResult | null> {
+const acquireTokenSilently = async (
+  account: AccountInfo,
+): Promise<AuthenticationResult | null> => {
   try {
     return await getMsalClient().acquireTokenSilent({
       account,
@@ -29,11 +31,11 @@ async function acquireTokenSilently(account: AccountInfo): Promise<Authenticatio
   } catch {
     return null;
   }
-}
+};
 
-async function acquireTokenByDeviceCode(
+const acquireTokenByDeviceCode = async (
   notify: DeviceCodeNotifier,
-): Promise<AuthenticationResult> {
+): Promise<AuthenticationResult> => {
   const result = await getMsalClient().acquireTokenByDeviceCode({
     scopes: [...SCOPES],
     deviceCodeCallback: (response) => {
@@ -49,9 +51,9 @@ async function acquireTokenByDeviceCode(
     throw new Error('Device-code authentication returned no result.');
   }
   return result;
-}
+};
 
-export async function getAccessToken(): Promise<string> {
+export const getAccessToken = async (): Promise<string> => {
   const account = await getCachedAccount();
   if (account) {
     const silent = await acquireTokenSilently(account);
@@ -60,9 +62,11 @@ export async function getAccessToken(): Promise<string> {
   throw new Error(
     'Not signed in. Run `onenote-mcp login` to authenticate before starting the MCP server.',
   );
-}
+};
 
-export async function login(notify: DeviceCodeNotifier = DEFAULT_NOTIFIER): Promise<AccountInfo> {
+export const login = async (
+  notify: DeviceCodeNotifier = DEFAULT_NOTIFIER,
+): Promise<AccountInfo> => {
   const existing = await getCachedAccount();
   if (existing) {
     const silent = await acquireTokenSilently(existing);
@@ -73,9 +77,9 @@ export async function login(notify: DeviceCodeNotifier = DEFAULT_NOTIFIER): Prom
     throw new Error('Sign-in completed but no account was returned.');
   }
   return result.account;
-}
+};
 
-export async function logout(): Promise<void> {
+export const logout = async (): Promise<void> => {
   const cache = getMsalClient().getTokenCache();
   for (const account of await cache.getAllAccounts()) {
     await cache.removeAccount(account);
@@ -85,4 +89,4 @@ export async function logout(): Promise<void> {
   } catch (err) {
     if ((err as NodeJS.ErrnoException).code !== 'ENOENT') throw err;
   }
-}
+};

@@ -21,24 +21,24 @@ Environment:
   XDG_CONFIG_HOME            (optional) Override the config directory.
 `;
 
-function fail(message: string, exitCode = 1): never {
+const fail = (message: string, exitCode = 1): never => {
   process.stderr.write(`error: ${message}\n`);
   process.exit(exitCode);
-}
+};
 
-async function cmdLogin(): Promise<void> {
+const cmdLogin = async (): Promise<void> => {
   const account = await login(({ message }) => {
     process.stdout.write(`${message}\n`);
   });
   process.stdout.write(`\nSigned in as ${account.username}.\n`);
-}
+};
 
-async function cmdLogout(): Promise<void> {
+const cmdLogout = async (): Promise<void> => {
   await logout();
   process.stdout.write('Signed out. Cached tokens removed.\n');
-}
+};
 
-async function main(): Promise<void> {
+const main = async (): Promise<void> => {
   const [, , subcommand, ...rest] = process.argv;
 
   if (rest.length > 0) {
@@ -68,7 +68,7 @@ async function main(): Promise<void> {
     default:
       fail(`unknown subcommand: ${subcommand}\n\n${HELP}`);
   }
-}
+};
 
 main().catch((err: unknown) => {
   const message = err instanceof Error ? err.message : String(err);

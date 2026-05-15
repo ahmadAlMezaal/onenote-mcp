@@ -6,7 +6,7 @@ const inputSchema = {
   pageId: z.string().min(1).describe('OneNote page ID to delete. This action is irreversible.'),
 };
 
-export function register(server: McpServer): void {
+export const register = (server: McpServer): void => {
   server.registerTool(
     'delete_page',
     {
@@ -31,4 +31,4 @@ export function register(server: McpServer): void {
       };
     },
   );
-}
+};

@@ -12,7 +12,7 @@ export interface SearchPagesOptions {
   limit?: number;
 }
 
-export async function searchPages(options: SearchPagesOptions): Promise<Page[]> {
+export const searchPages = async (options: SearchPagesOptions): Promise<Page[]> => {
   const { query, limit = 25 } = options;
   // Graph's $search on /me/onenote/pages does a server-side full-text match on
   // page title + content. Quoting the term keeps it safe across odata.
@@ -28,23 +28,21 @@ export async function searchPages(options: SearchPagesOptions): Promise<Page[]> 
   });
   // $top is a page size, not a total cap — paginate follows nextLinks until exhausted.
   return pages.slice(0, limit);
-}
+};
 
-export async function getPage(pageId: string): Promise<Page> {
-  return graphRequest<Page>(`/me/onenote/pages/${encodeURIComponent(pageId)}`, {
+export const getPage = (pageId: string): Promise<Page> =>
+  graphRequest<Page>(`/me/onenote/pages/${encodeURIComponent(pageId)}`, {
     query: {
       $select: PAGE_SELECT,
       $expand: PAGE_EXPAND,
     },
   });
-}
 
-export async function getPageContent(pageId: string): Promise<string> {
-  return graphRequest<string>(`/me/onenote/pages/${encodeURIComponent(pageId)}/content`, {
+export const getPageContent = (pageId: string): Promise<string> =>
+  graphRequest<string>(`/me/onenote/pages/${encodeURIComponent(pageId)}/content`, {
     accept: 'text/html',
     parse: 'text',
   });
-}
 
 export interface CreatePageOptions {
   sectionId: string;
@@ -52,7 +50,7 @@ export interface CreatePageOptions {
   html: string;
 }
 
-export async function createPage(options: CreatePageOptions): Promise<Page> {
+export const createPage = (options: CreatePageOptions): Promise<Page> => {
   const { sectionId, html } = options;
   return graphRequest<Page>(
     `/me/onenote/sections/${encodeURIComponent(sectionId)}/pages`,
@@ -62,11 +60,11 @@ export async function createPage(options: CreatePageOptions): Promise<Page> {
       body: html,
     },
   );
-}
+};
 
-export async function deletePage(pageId: string): Promise<void> {
+export const deletePage = async (pageId: string): Promise<void> => {
   await graphRequest<void>(`/me/onenote/pages/${encodeURIComponent(pageId)}`, {
     method: 'DELETE',
     parse: 'none',
   });
-}
+};

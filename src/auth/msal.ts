@@ -4,7 +4,7 @@ import { createFileCachePlugin } from './tokenCache.js';
 
 let cachedClient: PublicClientApplication | undefined;
 
-export function getMsalClient(): PublicClientApplication {
+export const getMsalClient = (): PublicClientApplication => {
   if (cachedClient) return cachedClient;
 
   const config: Configuration = {
@@ -31,8 +31,8 @@ export function getMsalClient(): PublicClientApplication {
 
   cachedClient = new PublicClientApplication(config);
   return cachedClient;
-}
+};
 
-export function resetMsalClientForTests(): void {
+export const resetMsalClientForTests = (): void => {
   cachedClient = undefined;
-}
+};

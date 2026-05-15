@@ -13,7 +13,7 @@ const inputSchema = {
     ),
 };
 
-export function register(server: McpServer): void {
+export const register = (server: McpServer): void => {
   server.registerTool(
     'read_page',
     {
@@ -44,4 +44,4 @@ export function register(server: McpServer): void {
       };
     },
   );
-}
+};

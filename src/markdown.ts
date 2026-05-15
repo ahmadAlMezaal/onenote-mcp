@@ -10,20 +10,19 @@ const turndown = new TurndownService({
   emDelimiter: '_',
 });
 
-function escapeHtml(input: string): string {
-  return input
+const escapeHtml = (input: string): string =>
+  input
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;');
-}
 
 /**
  * Convert Markdown into a full HTML document suitable for the OneNote
  * `POST /sections/{id}/pages` endpoint, which expects an XHTML page with
  * <html>, <head><title>…</title></head>, and <body>.
  */
-export function markdownToOneNoteHtml(markdown: string, title: string): string {
+export const markdownToOneNoteHtml = (markdown: string, title: string): string => {
   const bodyHtml = marked.parse(markdown, { async: false }) as string;
   const safeTitle = escapeHtml(title);
   return `<!DOCTYPE html>
@@ -36,13 +35,13 @@ export function markdownToOneNoteHtml(markdown: string, title: string): string {
 ${bodyHtml}
   </body>
 </html>`;
-}
+};
 
 /**
  * Wrap raw HTML body content in a OneNote-compatible page document.
  * Idempotent: if `html` already contains <html>…</html>, returns it unchanged.
  */
-export function htmlToOneNotePage(html: string, title: string): string {
+export const htmlToOneNotePage = (html: string, title: string): string => {
   if (/<html[\s>]/i.test(html)) return html;
   const safeTitle = escapeHtml(title);
   return `<!DOCTYPE html>
@@ -55,8 +54,6 @@ export function htmlToOneNotePage(html: string, title: string): string {
 ${html}
   </body>
 </html>`;
-}
+};
 
-export function htmlToMarkdown(html: string): string {
-  return turndown.turndown(html);
-}
+export const htmlToMarkdown = (html: string): string => turndown.turndown(html);

@@ -4,7 +4,7 @@ import type { Section } from './types.js';
 const SECTION_SELECT =
   'id,displayName,isDefault,createdDateTime,lastModifiedDateTime,parentNotebook,parentSectionGroup,links';
 
-export async function listSections(notebookId?: string): Promise<Section[]> {
+export const listSections = (notebookId?: string): Promise<Section[]> => {
   const path = notebookId
     ? `/me/onenote/notebooks/${encodeURIComponent(notebookId)}/sections`
     : '/me/onenote/sections';
@@ -15,4 +15,4 @@ export async function listSections(notebookId?: string): Promise<Section[]> {
       $orderby: 'displayName',
     },
   });
-}
+};

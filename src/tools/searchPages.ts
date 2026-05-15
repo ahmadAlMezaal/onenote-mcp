@@ -13,7 +13,7 @@ const inputSchema = {
     .describe('Maximum number of pages to return (default 25, max 100).'),
 };
 
-export function register(server: McpServer): void {
+export const register = (server: McpServer): void => {
   server.registerTool(
     'search_pages',
     {
@@ -37,4 +37,4 @@ export function register(server: McpServer): void {
       };
     },
   );
-}
+};

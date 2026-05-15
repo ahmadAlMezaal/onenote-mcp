@@ -15,17 +15,15 @@ const APP_DIR_NAME = 'onenote-mcp';
 
 const TOKEN_CACHE_FILENAME = 'tokens.json';
 
-export function getConfigDir(): string {
+export const getConfigDir = (): string => {
   const xdg = process.env.XDG_CONFIG_HOME;
   const base = xdg && xdg.length > 0 ? xdg : join(homedir(), '.config');
   return join(base, APP_DIR_NAME);
-}
+};
 
-export function getTokenCachePath(): string {
-  return join(getConfigDir(), TOKEN_CACHE_FILENAME);
-}
+export const getTokenCachePath = (): string => join(getConfigDir(), TOKEN_CACHE_FILENAME);
 
-export function getClientId(): string {
+export const getClientId = (): string => {
   const id = process.env[CLIENT_ID_ENV];
   if (!id || id.trim().length === 0) {
     throw new Error(
@@ -33,12 +31,12 @@ export function getClientId(): string {
     );
   }
   return id.trim();
-}
+};
 
-export function getAuthority(): string {
+export const getAuthority = (): string => {
   const tenant = process.env[TENANT_ID_ENV]?.trim();
   if (tenant && tenant.length > 0) {
     return `https://login.microsoftonline.com/${tenant}`;
   }
   return AUTHORITY;
-}
+};

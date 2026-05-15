@@ -4,26 +4,22 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { createFileCachePlugin } from '../src/auth/tokenCache.js';
 
-function makeContext(initial: string) {
+const makeContext = (initial: string) => {
   let serialized = initial;
   return {
     cacheHasChanged: false,
     tokenCache: {
-      deserialize(data: string) {
+      deserialize: (data: string): void => {
         serialized = data;
       },
-      serialize() {
-        return serialized;
-      },
+      serialize: (): string => serialized,
     },
-    setSerialized(value: string) {
+    setSerialized: (value: string): void => {
       serialized = value;
     },
-    getSerialized() {
-      return serialized;
-    },
+    getSerialized: (): string => serialized,
   };
-}
+};
 
 describe('createFileCachePlugin', () => {
   let dir: string;

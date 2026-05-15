@@ -15,7 +15,7 @@ const inputSchema = {
     ),
 };
 
-export function register(server: McpServer): void {
+export const register = (server: McpServer): void => {
   server.registerTool(
     'create_page',
     {
@@ -49,4 +49,4 @@ export function register(server: McpServer): void {
       };
     },
   );
-}
+};

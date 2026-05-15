@@ -11,7 +11,7 @@ const inputSchema = {
     ),
 };
 
-export function register(server: McpServer): void {
+export const register = (server: McpServer): void => {
   server.registerTool(
     'list_sections',
     {
@@ -36,4 +36,4 @@ export function register(server: McpServer): void {
       };
     },
   );
-}
+};

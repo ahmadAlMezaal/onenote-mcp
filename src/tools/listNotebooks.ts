@@ -1,7 +1,7 @@
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { listNotebooks } from '../graph/notebooks.js';
 
-export function register(server: McpServer): void {
+export const register = (server: McpServer): void => {
   server.registerTool(
     'list_notebooks',
     {
@@ -25,4 +25,4 @@ export function register(server: McpServer): void {
       };
     },
   );
-}
+};

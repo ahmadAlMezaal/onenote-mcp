@@ -6,11 +6,11 @@ import { register as registerReadPage } from './readPage.js';
 import { register as registerCreatePage } from './createPage.js';
 import { register as registerDeletePage } from './deletePage.js';
 
-export function registerAllTools(server: McpServer): void {
+export const registerAllTools = (server: McpServer): void => {
   registerListNotebooks(server);
   registerListSections(server);
   registerSearchPages(server);
   registerReadPage(server);
   registerCreatePage(server);
   registerDeletePage(server);
-}
+};
