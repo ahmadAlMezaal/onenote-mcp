@@ -5,12 +5,14 @@ Thanks for considering a contribution. The project is intentionally small — pl
 ## Development loop
 
 ```sh
-npm install
-npm run typecheck   # tsc --noEmit
-npm run lint        # eslint
-npm test            # vitest
-npm run build       # tsc → dist/
+yarn install
+yarn typecheck   # tsc --noEmit
+yarn lint        # eslint
+yarn test        # vitest
+yarn build       # tsc → dist/
 ```
+
+> Yarn (Classic, 1.x) is the source of truth for the lockfile — do not commit `package-lock.json`.
 
 Run the built CLI locally:
 
@@ -54,6 +56,6 @@ Keep the subject under 72 characters. Wrap the body at ~80.
 Releases are cut by pushing a tag. The `release.yml` workflow publishes to npm using the `NPM_TOKEN` repo secret.
 
 ```sh
-npm version patch   # or minor / major
+yarn version --patch   # or --minor / --major
 git push --follow-tags
 ```

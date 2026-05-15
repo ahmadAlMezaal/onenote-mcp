@@ -160,15 +160,17 @@ PRs welcome. The codebase aims to stay small and focused.
 ```sh
 git clone https://github.com/ahmadAlMezaal/onenote-mcp
 cd onenote-mcp
-npm install
-npm run build
-npm test
+yarn install
+yarn build
+yarn test
 ```
 
-- `npm run typecheck` — `tsc --noEmit`
-- `npm run lint` — ESLint
-- `npm test` — Vitest
-- `npm run dev` — TypeScript in watch mode
+- `yarn typecheck` — `tsc --noEmit`
+- `yarn lint` — ESLint
+- `yarn test` — Vitest
+- `yarn dev` — TypeScript in watch mode
+
+> Use Yarn (Classic), not npm. The repo's lockfile is `yarn.lock` — `package-lock.json` should not be committed.
 
 Commits follow [Conventional Commits](https://www.conventionalcommits.org/) (`feat:`, `fix:`, `chore:`, etc.). CI runs typecheck + lint + tests on every push and PR.
 

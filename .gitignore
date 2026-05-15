@@ -17,6 +17,9 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 
+# Wrong package manager — Yarn is the source of truth.
+package-lock.json
+
 # Env / secrets
 .env
 .env.local
