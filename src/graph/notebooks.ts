@@ -1,4 +1,4 @@
-import { paginate } from './client.js';
+import { graphRequest, paginate } from './client.js';
 import type { Notebook } from './types.js';
 
 const NOTEBOOK_SELECT =
@@ -10,4 +10,13 @@ export const listNotebooks = (): Promise<Notebook[]> =>
       $select: NOTEBOOK_SELECT,
       $orderby: 'displayName',
     },
+  });
+
+export const createNotebook = (name: string): Promise<Notebook> =>
+  graphRequest<Notebook>('/me/onenote/notebooks', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ displayName: name }),
+    // $select on POST shapes the response so callers don't see undefined fields.
+    query: { $select: NOTEBOOK_SELECT },
   });
