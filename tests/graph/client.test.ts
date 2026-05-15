@@ -3,6 +3,7 @@ import { GraphError, graphRequest, paginate } from '../../src/graph/client.js';
 import { createPage, searchPages, updatePage } from '../../src/graph/pages.js';
 import { createNotebook } from '../../src/graph/notebooks.js';
 import { createSection } from '../../src/graph/sections.js';
+import { createSectionGroup, listSectionGroups } from '../../src/graph/sectionGroups.js';
 
 vi.mock('../../src/auth/index.js', () => ({
   getAccessToken: vi.fn(async () => 'fake-access-token'),
@@ -184,9 +185,9 @@ describe('createNotebook', () => {
 });
 
 describe('createSection', () => {
-  it('POSTs displayName to the notebook sections endpoint with $select and $expand', async () => {
+  it('POSTs to the notebook sections endpoint when notebookId is given, with $select and $expand', async () => {
     fetchMock.mockResolvedValueOnce(jsonResponse({ id: 's1', displayName: 'Work' }));
-    const section = await createSection('nb-abc', 'Work');
+    const section = await createSection({ notebookId: 'nb-abc' }, 'Work');
     expect(section.id).toBe('s1');
 
     const [url, init] = fetchMock.mock.calls[0]!;
@@ -194,8 +195,17 @@ describe('createSection', () => {
     expect(parsed.pathname).toBe('/v1.0/me/onenote/notebooks/nb-abc/sections');
     expect(parsed.searchParams.get('$select')).toContain('parentNotebook');
     expect(parsed.searchParams.get('$expand')).toContain('parentNotebook');
+    expect(parsed.searchParams.get('$expand')).toContain('parentSectionGroup');
     expect((init as RequestInit).method).toBe('POST');
     expect(JSON.parse((init as RequestInit).body as string)).toEqual({ displayName: 'Work' });
+  });
+
+  it('POSTs to the sectionGroups sections endpoint when sectionGroupId is given', async () => {
+    fetchMock.mockResolvedValueOnce(jsonResponse({ id: 's2', displayName: 'Sub' }));
+    await createSection({ sectionGroupId: 'sg-xyz' }, 'Sub');
+    const [url] = fetchMock.mock.calls[0]!;
+    const parsed = new URL(String(url));
+    expect(parsed.pathname).toBe('/v1.0/me/onenote/sectionGroups/sg-xyz/sections');
   });
 });
 
@@ -252,6 +262,35 @@ describe('createPage', () => {
   });
 });
 
+describe('section groups', () => {
+  it('listSectionGroups hits the notebook-scoped endpoint with a notebook id, expanding both parents', async () => {
+    fetchMock.mockResolvedValueOnce(jsonResponse({ value: [] }));
+    await listSectionGroups('nb-1');
+    const [url] = fetchMock.mock.calls[0]!;
+    const parsed = new URL(String(url));
+    expect(parsed.pathname).toBe('/v1.0/me/onenote/notebooks/nb-1/sectionGroups');
+    expect(parsed.searchParams.get('$expand')).toContain('parentNotebook');
+    expect(parsed.searchParams.get('$expand')).toContain('parentSectionGroup');
+  });
+
+  it('listSectionGroups hits the global endpoint without a notebook id', async () => {
+    fetchMock.mockResolvedValueOnce(jsonResponse({ value: [] }));
+    await listSectionGroups();
+    const [url] = fetchMock.mock.calls[0]!;
+    expect(String(url)).toContain('/me/onenote/sectionGroups');
+    expect(String(url)).not.toContain('/notebooks/');
+  });
+
+  it('createSectionGroup nests under a parent section group when given one, with $expand', async () => {
+    fetchMock.mockResolvedValueOnce(jsonResponse({ id: 'g1', displayName: 'Inner' }));
+    await createSectionGroup({ sectionGroupId: 'sg-1' }, 'Inner');
+    const [url, init] = fetchMock.mock.calls[0]!;
+    const parsed = new URL(String(url));
+    expect(parsed.pathname).toBe('/v1.0/me/onenote/sectionGroups/sg-1/sectionGroups');
+    expect(parsed.searchParams.get('$expand')).toContain('parentSectionGroup');
+    expect(JSON.parse((init as RequestInit).body as string)).toEqual({ displayName: 'Inner' });
+  });
+});
 describe('paginate', () => {
   it('follows @odata.nextLink until exhausted', async () => {
     fetchMock
