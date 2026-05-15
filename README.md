@@ -176,6 +176,8 @@ yarn test
 
 > Use Yarn (Classic), not npm. The repo's lockfile is `yarn.lock` — `package-lock.json` should not be committed.
 
+If you're using an AI coding assistant (Claude Code, Cursor, etc.), see [`CLAUDE.md`](CLAUDE.md) for project conventions, the arrow-function rule, and the tool-authoring checklist.
+
 Commits follow [Conventional Commits](https://www.conventionalcommits.org/) (`feat:`, `fix:`, `chore:`, etc.). CI runs typecheck + lint + tests on every push and PR.
 
 ### Roadmap
