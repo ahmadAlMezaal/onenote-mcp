@@ -131,7 +131,7 @@ Any MCP-compatible client that supports stdio servers will work. Run `npx @atomi
 | `read_page`       | Returns page metadata + content (HTML or Markdown).             | `pageId`, `format?` (`html` \| `markdown`)       |
 | `create_notebook` | Creates a new top-level notebook.                               | `name`                                           |
 | `create_section`  | Creates a section inside a notebook.                            | `notebookId`, `name`                             |
-| `create_page`     | Creates a page in a section. Accepts Markdown (default) or HTML. | `sectionId`, `title`, `content`, `format?`      |
+| `create_page`     | Creates a page in a section. Accepts Markdown (default) or HTML, plus optional binary attachments. | `sectionId`, `title`, `content`, `format?`, `attachments?` |
 | `update_page`     | Applies edits to a page: append/prepend/insert/replace/delete elements. | `pageId`, `operations[]`                 |
 | `delete_page`     | Permanently deletes a page. **Irreversible.**                   | `pageId`                                         |
 
@@ -149,8 +149,8 @@ Any MCP-compatible client that supports stdio servers will work. Run `npx @atomi
 
 ## Known limitations
 
-- **No attachment / image upload in v1.** Pages with embedded binary content require multipart bodies. _(coming soon)_
 - **No section group creation.** OneNote supports nested section groups; v1 can list sections inside them but can't create groups themselves. _(coming soon)_
+- **Attachments are sent in-memory.** `create_page` reads attachment files synchronously before posting; very large files (~150 MB+) may strain Node's heap. Streamed uploads are a future enhancement.
 - **`update_page` targets are raw `data-id` selectors.** To edit a specific element, read the page first and pull the `data-id` attribute out of the returned HTML. Higher-level selectors (e.g. "the section under heading X") are tracked for a follow-up.
 - **Search latency.** Microsoft Graph's `$search` against `/me/onenote/pages` can take a few seconds against large notebooks; the server retries on 429s with exponential backoff.
 
@@ -181,8 +181,9 @@ Commits follow [Conventional Commits](https://www.conventionalcommits.org/) (`fe
 
 - [x] `update_page` — in-place edits via Graph's `PATCH` syntax
 - [x] `create_section` / `create_notebook`
-- [ ] Image and attachment upload (multipart create_page)
+- [x] Image and attachment upload (multipart create_page)
 - [ ] Section group support
+- [ ] Streamed attachment uploads (avoid in-memory buffering for large files)
 - [ ] Resource-style page browsing (alongside the tool surface)
 
 ---

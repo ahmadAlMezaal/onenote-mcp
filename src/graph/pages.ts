@@ -44,22 +44,44 @@ export const getPageContent = (pageId: string): Promise<string> =>
     parse: 'text',
   });
 
+export interface CreatePageAttachment {
+  /** The part name referenced from the HTML via `name:<name>` URIs. */
+  name: string;
+  contentType: string;
+  /** Raw bytes for the part. */
+  data: Uint8Array;
+}
+
 export interface CreatePageOptions {
   sectionId: string;
   /** Full HTML document including <html><head><title>…</title></head><body>…</body></html>. */
   html: string;
+  /** Optional binary attachments. When present, the page is sent as multipart/form-data. */
+  attachments?: CreatePageAttachment[];
 }
 
 export const createPage = (options: CreatePageOptions): Promise<Page> => {
-  const { sectionId, html } = options;
-  return graphRequest<Page>(
-    `/me/onenote/sections/${encodeURIComponent(sectionId)}/pages`,
-    {
+  const { sectionId, html, attachments } = options;
+  const path = `/me/onenote/sections/${encodeURIComponent(sectionId)}/pages`;
+
+  if (!attachments || attachments.length === 0) {
+    return graphRequest<Page>(path, {
       method: 'POST',
       headers: { 'Content-Type': 'application/xhtml+xml' },
       body: html,
-    },
-  );
+    });
+  }
+
+  const form = new FormData();
+  form.append('Presentation', new Blob([html], { type: 'application/xhtml+xml' }));
+  for (const part of attachments) {
+    form.append(part.name, new Blob([part.data], { type: part.contentType }));
+  }
+  // Don't set Content-Type — fetch + FormData adds the multipart boundary itself.
+  return graphRequest<Page>(path, {
+    method: 'POST',
+    body: form,
+  });
 };
 
 export const deletePage = async (pageId: string): Promise<void> => {

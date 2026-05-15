@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { GraphError, graphRequest, paginate } from '../../src/graph/client.js';
-import { searchPages, updatePage } from '../../src/graph/pages.js';
+import { createPage, searchPages, updatePage } from '../../src/graph/pages.js';
 import { createNotebook } from '../../src/graph/notebooks.js';
 import { createSection } from '../../src/graph/sections.js';
 
@@ -196,6 +196,59 @@ describe('createSection', () => {
     expect(parsed.searchParams.get('$expand')).toContain('parentNotebook');
     expect((init as RequestInit).method).toBe('POST');
     expect(JSON.parse((init as RequestInit).body as string)).toEqual({ displayName: 'Work' });
+  });
+});
+
+describe('createPage', () => {
+  it('sends application/xhtml+xml when no attachments are provided', async () => {
+    fetchMock.mockResolvedValueOnce(jsonResponse({ id: 'p1', title: 'Hi' }));
+    await createPage({ sectionId: 'sec-1', html: '<html><body>hi</body></html>' });
+
+    const [url, init] = fetchMock.mock.calls[0]!;
+    expect(String(url)).toBe(
+      'https://graph.microsoft.com/v1.0/me/onenote/sections/sec-1/pages',
+    );
+    expect((init as RequestInit).method).toBe('POST');
+    expect((init as RequestInit).headers).toMatchObject({
+      'Content-Type': 'application/xhtml+xml',
+    });
+    expect((init as RequestInit).body).toBe('<html><body>hi</body></html>');
+  });
+
+  it('accepts a path-only attachment object as long as bytes are pre-loaded', async () => {
+    // Path resolution lives in the tool layer; the graph wrapper accepts bytes.
+    fetchMock.mockResolvedValueOnce(jsonResponse({ id: 'p3', title: 'Hi' }));
+    await createPage({
+      sectionId: 's',
+      html: '<html><body><img src="name:x"/></body></html>',
+      attachments: [{ name: 'x', contentType: 'image/png', data: new Uint8Array([1, 2]) }],
+    });
+    expect((fetchMock.mock.calls[0]![1] as RequestInit).body).toBeInstanceOf(FormData);
+  });
+
+  it('builds a multipart/form-data body when attachments are present', async () => {
+    fetchMock.mockResolvedValueOnce(jsonResponse({ id: 'p2', title: 'With image' }));
+    await createPage({
+      sectionId: 'sec-2',
+      html: '<html><body><img src="name:img1"/></body></html>',
+      attachments: [
+        {
+          name: 'img1',
+          contentType: 'image/png',
+          data: new Uint8Array([0x89, 0x50, 0x4e, 0x47]),
+        },
+      ],
+    });
+
+    const [, init] = fetchMock.mock.calls[0]!;
+    // Content-Type is omitted so fetch + FormData injects the multipart boundary.
+    const headers = (init as RequestInit).headers as Record<string, string>;
+    expect(headers['Content-Type']).toBeUndefined();
+    expect((init as RequestInit).body).toBeInstanceOf(FormData);
+    const form = (init as RequestInit).body as FormData;
+    expect(form.get('Presentation')).toBeInstanceOf(Blob);
+    expect(form.get('img1')).toBeInstanceOf(Blob);
+    expect((form.get('img1') as Blob).type).toBe('image/png');
   });
 });
 
