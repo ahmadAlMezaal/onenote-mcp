@@ -17,7 +17,7 @@ export interface RequestOptions {
   method?: 'GET' | 'POST' | 'PATCH' | 'DELETE' | 'PUT';
   query?: Record<string, string | number | boolean | undefined>;
   headers?: Record<string, string>;
-  body?: string | Uint8Array | null;
+  body?: string | Uint8Array | FormData | null;
   /** Override the default JSON Accept header. */
   accept?: string;
   /** Parse mode for the response body. */
