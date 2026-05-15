@@ -68,3 +68,27 @@ export const deletePage = async (pageId: string): Promise<void> => {
     parse: 'none',
   });
 };
+
+export type UpdatePageAction = 'append' | 'prepend' | 'insert' | 'replace' | 'delete';
+
+export interface UpdatePageCommand {
+  /** `body`, `title`, or `#<data-id>`. */
+  target: string;
+  action: UpdatePageAction;
+  /** Required when `action` is `insert`; optional with `append`/`prepend` for sibling positioning. */
+  position?: 'before' | 'after';
+  /** HTML fragment. Required for every action except `delete`. */
+  content?: string;
+}
+
+export const updatePage = async (
+  pageId: string,
+  commands: UpdatePageCommand[],
+): Promise<void> => {
+  await graphRequest<void>(`/me/onenote/pages/${encodeURIComponent(pageId)}/content`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(commands),
+    parse: 'none',
+  });
+};
