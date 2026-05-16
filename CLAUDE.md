@@ -4,7 +4,7 @@ Project conventions for Claude Code (and any other AI assistant working in this 
 
 ## What this project is
 
-`@atomiclabs/onenote-mcp` — an open-source MCP (Model Context Protocol) server for **Microsoft OneNote**. Users run it via `npx @atomiclabs/onenote-mcp` and wire it into Claude Desktop, Cursor, or any MCP-compatible client. Auth uses MSAL device-code against a user-owned Microsoft Entra app registration. The server exposes typed tools that talk to Microsoft Graph.
+`@atomiclabs97/onenote-mcp` — an open-source MCP (Model Context Protocol) server for **Microsoft OneNote**. Users run it via `npx @atomiclabs97/onenote-mcp` and wire it into Claude Desktop, Cursor, or any MCP-compatible client. Auth uses MSAL device-code against a user-owned Microsoft Entra app registration. The server exposes typed tools that talk to Microsoft Graph.
 
 ## Tech stack
 
@@ -85,7 +85,7 @@ The end-to-end auth flow is documented in [`README.md`](README.md#1-register-a-m
 - Don't write multi-paragraph code comments or docstrings. One short line max.
 - Don't commit `package-lock.json`. Don't switch the project back to npm.
 - Don't write `function foo() {}` at module scope. Use `const foo = () => {}`.
-- Don't reach for the bare `onenote-mcp` npm name — it's taken. We publish as `@atomiclabs/onenote-mcp`.
+- Don't reach for the bare `onenote-mcp` npm name — it's taken. We publish as `@atomiclabs97/onenote-mcp`.
 - Don't propose roadmap features that are already tracked. Check the **Roadmap** section in `README.md` first.
 - Don't reformat or restyle code unrelated to the change you're making.
 - Don't use `package-lock.json` syntax or `npm run <script>` in docs. Always `yarn <script>`.

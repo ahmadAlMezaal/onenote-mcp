@@ -1,6 +1,6 @@
 {
-  "name": "@atomiclabs/onenote-mcp",
-  "version": "0.1.0",
+  "name": "@atomiclabs97/onenote-mcp",
+  "version": "0.1.1",
   "description": "MCP server for Microsoft OneNote — read, search, create, and delete pages via Microsoft Graph.",
   "type": "module",
   "main": "./dist/index.js",
