@@ -121,6 +121,84 @@ Any MCP-compatible client that supports stdio servers will work. Run `npx @atomi
 
 ---
 
+## Remote transport (HTTP)
+
+In addition to the default stdio mode, the server can speak the MCP **Streamable HTTP** transport. Use this when the MCP client lives somewhere other than the same machine as the server — for example, [claude.ai](https://claude.ai) Connectors (web, iOS, Android), a self-hosted bridge on a home server, or a backend integration.
+
+**Stdio is still the default.** Nothing changes for existing Claude Desktop / Cursor users.
+
+### When to use which
+
+| Transport | When |
+| --- | --- |
+| `stdio` (default) | Local desktop clients (Claude Desktop, Cursor, Claude Code). Tokens never leave your disk; the server runs as a subprocess of the client. |
+| `http` | Remote clients (claude.ai web/mobile Connectors), self-hosted deployments, any setup where the server runs separately from the client. |
+
+### Boot it
+
+```sh
+# Generate a strong shared secret first — clients must send this as `Authorization: Bearer <token>`.
+export ONENOTE_MCP_HTTP_TOKEN="$(openssl rand -base64 32)"
+
+ONENOTE_MCP_CLIENT_ID=<your-app-client-id> \
+  npx @atomiclabs97/onenote-mcp --transport http --port 3000
+```
+
+The server refuses to start without `ONENOTE_MCP_HTTP_TOKEN` — a remote MCP endpoint with no auth is the entire world reading your OneNote.
+
+### Endpoints
+
+| Method | Path | Auth | Purpose |
+| --- | --- | --- | --- |
+| `POST` / `GET` / `DELETE` | `/mcp` | `Authorization: Bearer <token>` | MCP Streamable HTTP transport. All tools mounted here. |
+| `GET` | `/healthz` | none | Liveness probe; returns 200 with no body. For platform health checks. |
+
+Bearer-token comparison is constant-time. Wrong or missing tokens return `401 Unauthorized` with a `WWW-Authenticate: Bearer` header.
+
+### Defaults and overrides
+
+| Flag | Env var | Default | Notes |
+| --- | --- | --- | --- |
+| `--transport <stdio\|http>` | — | `stdio` | |
+| `--host <addr>` | `ONENOTE_MCP_HTTP_HOST` | `127.0.0.1` | Set to `0.0.0.0` to listen on all interfaces (containers / PaaS). |
+| `--port <n>` | `ONENOTE_MCP_HTTP_PORT` | `3000` | |
+
+Flags win over env vars.
+
+### Pointing a client at it
+
+```sh
+# Sanity check
+curl http://127.0.0.1:3000/healthz                                 # → 200
+curl -X POST -H "Authorization: Bearer $ONENOTE_MCP_HTTP_TOKEN" \
+     -H "Content-Type: application/json" \
+     -H "Accept: application/json, text/event-stream" \
+     -d '{"jsonrpc":"2.0","id":1,"method":"tools/list","params":{}}' \
+     http://127.0.0.1:3000/mcp
+```
+
+Sign in with `npx @atomiclabs97/onenote-mcp login` (one-time, on the host running the server) before any tools are invoked — the device-code flow is the same as the stdio path and caches tokens at `~/.config/onenote-mcp/tokens.json`. The bearer token is **server↔client auth only**; the Microsoft Graph credentials still come from the cached refresh token.
+
+### Rotating the bearer token
+
+1. Pick a new token: `openssl rand -base64 32`.
+2. Update `ONENOTE_MCP_HTTP_TOKEN` and restart the server.
+3. Update the token everywhere a client uses it.
+
+No session state is kept between requests, so rotation is just a restart — there is nothing to migrate.
+
+### Multi-tenant?
+
+No. v0.2 assumes **one OneNote account per deployment**. The bearer token gates access to whichever account `onenote-mcp login` was last run for on the host. If you need per-user separation today, run one instance per user.
+
+### Limitations
+
+- The HTTP transport is **stateless**: each request gets a fresh transport, no `Mcp-Session-Id` is issued, and the server does not push notifications. Tools that perform a single request → single response (i.e. all eleven shipped tools) work normally.
+- No rate-limiting beyond the bearer-token gate. Put the server behind a reverse proxy / API gateway if you need it.
+- Deployment recipes (Dockerfile, [Fly.io](https://fly.io), [claude.ai](https://claude.ai) Connector wiring) live in a follow-up — see the Roadmap.
+
+---
+
 ## Tools
 
 | Tool             | Description                                                     | Key inputs                                       |
@@ -145,6 +223,9 @@ Any MCP-compatible client that supports stdio servers will work. Run `npx @atomi
 | -------------------------- | -------- | --------------------------------------------------------------------------------- |
 | `ONENOTE_MCP_CLIENT_ID`    | yes      | Application (client) ID of your Microsoft Entra app registration.                  |
 | `ONENOTE_MCP_TENANT_ID`    | no       | Tenant ID. Defaults to `common`, which works for both personal and work accounts. |
+| `ONENOTE_MCP_HTTP_TOKEN`   | http only | Shared bearer token for the HTTP transport. Required when `--transport http`. |
+| `ONENOTE_MCP_HTTP_HOST`    | no       | Bind address for the HTTP transport. Defaults to `127.0.0.1`. `--host` wins.       |
+| `ONENOTE_MCP_HTTP_PORT`    | no       | Listen port for the HTTP transport. Defaults to `3000`. `--port` wins.             |
 | `XDG_CONFIG_HOME`          | no       | Override the config directory. Tokens are stored at `<dir>/onenote-mcp/tokens.json`. |
 
 ---
@@ -201,6 +282,8 @@ Commits follow [Conventional Commits](https://www.conventionalcommits.org/) (`fe
 - [x] `create_section` / `create_notebook`
 - [x] Image and attachment upload (multipart create_page)
 - [x] Section group support (list + create + section-in-group targeting)
+- [x] HTTP (Streamable HTTP) transport with bearer-token auth
+- [ ] Self-hosted deployment guide (Dockerfile + Fly.io recipe + claude.ai Connector validation)
 - [ ] Streamed attachment uploads (avoid in-memory buffering for large files)
 - [ ] Resource-style page browsing (alongside the tool surface)
 
