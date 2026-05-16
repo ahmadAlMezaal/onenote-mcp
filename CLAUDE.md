@@ -42,19 +42,22 @@ src/
   graph/                  # Typed Microsoft Graph wrappers (one file per resource)
   tools/                  # One file per MCP tool + index.ts that registers them
 tests/                    # Vitest suites mirroring src/
+scripts/                  # Maintainer scripts (e.g. smoke.ts) — not shipped to npm
 .github/workflows/        # CI (typecheck/lint/test/build) + release (npm publish on tag)
 docs/images/              # Entra walkthrough screenshots referenced by README
+CHANGELOG.md              # Keep a Changelog; bump on every release
 ```
 
 ## Dev loop
 
 ```sh
 yarn install
-yarn typecheck   # tsc --noEmit
+yarn typecheck   # tsc --noEmit, covers src/ + scripts/
 yarn lint        # eslint .
-yarn test        # vitest run
-yarn build       # tsc → dist/
-yarn dev         # tsc --watch
+yarn test        # vitest run (unit tests, mocked Graph)
+yarn build       # tsc + tsc-alias → dist/
+yarn dev         # incremental rebuild: tsc --watch + tsc-alias --watch
+yarn smoke       # end-to-end against a real OneNote account (needs login first)
 ```
 
 To test the CLI locally against Claude Desktop:
