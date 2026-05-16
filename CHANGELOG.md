@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.1] - 2026-05-16
+
+### Fixed
+
+- Publish under the correct npm scope `@atomiclabs97`. The `0.1.0` tag was prepared under `@atomiclabs` but that org doesn't exist on npm; nothing reached the registry under that name. `0.1.1` is the first version actually available via `npx`.
+
 ## [0.1.0] - 2026-05-15
 
 Initial public release.
@@ -44,4 +50,5 @@ Initial public release.
 - End-to-end smoke script (`yarn smoke`) that exercises every tool against a real OneNote account
 - GitHub Actions: CI (typecheck / lint / test / build on every push and PR) + Release (npm publish with provenance on `v*.*.*` tag)
 
+[0.1.1]: https://github.com/ahmadAlMezaal/onenote-mcp/releases/tag/v0.1.1
 [0.1.0]: https://github.com/ahmadAlMezaal/onenote-mcp/releases/tag/v0.1.0
