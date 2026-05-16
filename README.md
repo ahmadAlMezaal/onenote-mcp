@@ -48,7 +48,18 @@ The device-code flow is a "public client" flow — it doesn't use a client secre
 
    ![Allow public client flows](docs/images/03-public-client.png)
 
-#### d. Grab the client ID
+#### d. Add the native-client redirect URI
+
+> Required for **personal Microsoft accounts** (`@gmail.com`, `@outlook.com`, etc.). Work/school accounts can skip this, but adding it doesn't hurt.
+
+Even though the device-code flow doesn't open a browser locally, the Microsoft consumer endpoint refuses to issue a token unless the app has the native-client redirect URI registered. Skipping this step is what causes the cryptic `invalid_request: The provided request must include a 'redirect_uri' input parameter.` error during sign-in.
+
+1. Still on the **Authentication** blade, open the **Redirect URI configuration** tab.
+2. Click **+ Add a platform** → **Mobile and desktop applications**.
+3. Check the suggested URI **`https://login.microsoftonline.com/common/oauth2/nativeclient`**.
+4. Click **Configure** / **Save**.
+
+#### e. Grab the client ID
 
 Back on the app's **Overview** page, copy the **Application (client) ID**. You'll pass it to the server via the `ONENOTE_MCP_CLIENT_ID` environment variable.
 
