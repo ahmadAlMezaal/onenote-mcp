@@ -10,6 +10,17 @@ An [MCP](https://modelcontextprotocol.io) server for **Microsoft OneNote**. Brin
 
 ---
 
+## Two ways to run it
+
+| You want to use OneNote in… | Run mode | Start here |
+| --- | --- | --- |
+| **Claude Desktop, Cursor, Claude Code** on your laptop | `stdio` — the server runs as a subprocess of the client; tokens never leave your disk | [Quick start](#quick-start) below |
+| **[claude.ai](https://claude.ai) web + iOS/Android**, or any remote client | `http` — you self-host the server and add it as a Connector | [Remote transport](#remote-transport-http) → [Self-hosting](#self-hosting) |
+
+Stdio is the default and needs no hosting. The HTTP transport is opt-in.
+
+---
+
 ## Quick start
 
 ### 1. Register a Microsoft Entra app
@@ -179,6 +190,8 @@ curl -X POST -H "Authorization: Bearer $ONENOTE_MCP_HTTP_TOKEN" \
 
 Sign in with `npx @atomiclabs97/onenote-mcp login` (one-time, on the host running the server) before any tools are invoked — the device-code flow is the same as the stdio path and caches tokens at `~/.config/onenote-mcp/tokens.json`. The bearer token is **server↔client auth only**; the Microsoft Graph credentials still come from the cached refresh token.
 
+On a headless host (a container, a PaaS) there's no terminal for the device-code login. Run `login` on your laptop instead, then pass the resulting `tokens.json` to the server via the `ONENOTE_MCP_TOKEN_CACHE` env var — on first boot in HTTP mode the server seeds its cache from it. The [deployment guides](#self-hosting) walk through this.
+
 ### Rotating the bearer token
 
 1. Pick a new token: `openssl rand -base64 32`.
@@ -195,7 +208,20 @@ No. v0.2 assumes **one OneNote account per deployment**. The bearer token gates 
 
 - The HTTP transport is **stateless**: each request gets a fresh transport, no `Mcp-Session-Id` is issued, and the server does not push notifications. Tools that perform a single request → single response (i.e. all eleven shipped tools) work normally.
 - No rate-limiting beyond the bearer-token gate. Put the server behind a reverse proxy / API gateway if you need it.
-- Deployment recipes (Dockerfile, [Fly.io](https://fly.io), [claude.ai](https://claude.ai) Connector wiring) live in a follow-up — see the Roadmap.
+
+---
+
+## Self-hosting
+
+To use OneNote from [claude.ai](https://claude.ai) (web + mobile) you host the HTTP transport somewhere with a public HTTPS URL, then add it as a custom Connector. Copy-paste recipes:
+
+| Guide | For |
+| --- | --- |
+| [Fly.io](docs/deployment/fly.md) | Fastest path — free-tier eligible, ~10 minutes, HTTPS handled for you. |
+| [Docker (VPS / home server)](docs/deployment/docker.md) | Any host you control; uses the published `ghcr.io/ahmadalmezaal/onenote-mcp` image. |
+| [claude.ai Connector](docs/deployment/claude-ai-connector.md) | Wiring the deployed URL into claude.ai and verifying the tools. |
+
+The repo ships a multi-stage [`Dockerfile`](Dockerfile) and a [`fly.toml`](fly.toml) template. Released Docker images are pushed to the GitHub Container Registry on every version tag.
 
 ---
 
@@ -226,6 +252,7 @@ No. v0.2 assumes **one OneNote account per deployment**. The bearer token gates 
 | `ONENOTE_MCP_HTTP_TOKEN`   | http only | Shared bearer token for the HTTP transport. Required when `--transport http`. |
 | `ONENOTE_MCP_HTTP_HOST`    | no       | Bind address for the HTTP transport. Defaults to `127.0.0.1`. `--host` wins.       |
 | `ONENOTE_MCP_HTTP_PORT`    | no       | Listen port for the HTTP transport. Defaults to `3000`. `--port` wins.             |
+| `ONENOTE_MCP_TOKEN_CACHE`  | no       | Verbatim `tokens.json` contents used to seed the cache on a headless host. Applied only in `--transport http` mode when no cached token exists yet. |
 | `XDG_CONFIG_HOME`          | no       | Override the config directory. Tokens are stored at `<dir>/onenote-mcp/tokens.json`. |
 
 ---
@@ -283,7 +310,7 @@ Commits follow [Conventional Commits](https://www.conventionalcommits.org/) (`fe
 - [x] Image and attachment upload (multipart create_page)
 - [x] Section group support (list + create + section-in-group targeting)
 - [x] HTTP (Streamable HTTP) transport with bearer-token auth
-- [ ] Self-hosted deployment guide (Dockerfile + Fly.io recipe + claude.ai Connector validation)
+- [x] Self-hosted deployment guide (Dockerfile + Fly.io recipe + claude.ai Connector validation)
 - [ ] Streamed attachment uploads (avoid in-memory buffering for large files)
 - [ ] Resource-style page browsing (alongside the tool surface)
 

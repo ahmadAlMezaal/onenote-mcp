@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import { login, logout } from './auth/index.js';
+import { seedTokenCacheFromEnv } from './auth/tokenCache.js';
 import { runServer, SERVER_VERSION } from './index.js';
 import { getHttpHost, getHttpPort, getHttpToken } from './config.js';
 import { startHttpServer } from './http/server.js';
@@ -33,6 +34,11 @@ Environment:
                                        \`Authorization: Bearer <token>\`.
   ONENOTE_MCP_HTTP_HOST                (optional) Bind address; --host wins.
   ONENOTE_MCP_HTTP_PORT                (optional) Listen port; --port wins.
+  ONENOTE_MCP_TOKEN_CACHE              (optional) Verbatim tokens.json contents
+                                       used to seed the cache on a headless
+                                       host that can't run device-code login.
+                                       Applied only in --transport http mode
+                                       when no cached token exists yet.
   XDG_CONFIG_HOME                      (optional) Override the config dir.
 `;
 
@@ -112,6 +118,9 @@ const cmdServe = async (args: ParsedArgs): Promise<void> => {
   const host = getHttpHost(args.host);
   const port = getHttpPort(args.port);
   const token = getHttpToken();
+  if (await seedTokenCacheFromEnv()) {
+    process.stderr.write('Seeded OneNote token cache from ONENOTE_MCP_TOKEN_CACHE.\n');
+  }
   const running = await startHttpServer({ host, port, token });
   process.stderr.write(`onenote-mcp HTTP server listening on http://${host}:${running.port}\n`);
   process.stderr.write(`  POST ${running.url}  (Authorization: Bearer <token>)\n`);

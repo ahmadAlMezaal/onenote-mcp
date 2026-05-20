@@ -17,6 +17,8 @@ export const HTTP_HOST_ENV = 'ONENOTE_MCP_HTTP_HOST';
 
 export const HTTP_PORT_ENV = 'ONENOTE_MCP_HTTP_PORT';
 
+export const TOKEN_CACHE_ENV = 'ONENOTE_MCP_TOKEN_CACHE';
+
 export const DEFAULT_HTTP_HOST = '127.0.0.1';
 
 export const DEFAULT_HTTP_PORT = 3000;
@@ -77,4 +79,9 @@ export const getHttpPort = (override?: number | string): number => {
     throw new Error(`Invalid HTTP port: ${String(candidate)}. Must be an integer between 0 and 65535.`);
   }
   return parsed;
+};
+
+export const getTokenCacheSeed = (): string | undefined => {
+  const raw = process.env[TOKEN_CACHE_ENV]?.trim();
+  return raw && raw.length > 0 ? raw : undefined;
 };

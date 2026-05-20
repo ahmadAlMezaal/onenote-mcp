@@ -2,7 +2,8 @@ import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { mkdtemp, rm, stat, readFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { createFileCachePlugin } from '@/auth/tokenCache.js';
+import { createFileCachePlugin, seedTokenCacheFromEnv } from '@/auth/tokenCache.js';
+import { TOKEN_CACHE_ENV } from '@/config.js';
 
 const makeContext = (initial: string) => {
   let serialized = initial;
@@ -70,6 +71,53 @@ describe('createFileCachePlugin', () => {
     const ctx = makeContext('{"x":1}');
     ctx.cacheHasChanged = false;
     await plugin.afterCacheAccess(ctx as never);
+    await expect(stat(path)).rejects.toMatchObject({ code: 'ENOENT' });
+  });
+});
+
+describe('seedTokenCacheFromEnv', () => {
+  let dir: string;
+  let path: string;
+
+  beforeEach(async () => {
+    dir = await mkdtemp(join(tmpdir(), 'onenote-mcp-seed-'));
+    path = join(dir, 'nested', 'tokens.json');
+    delete process.env[TOKEN_CACHE_ENV];
+  });
+
+  afterEach(async () => {
+    delete process.env[TOKEN_CACHE_ENV];
+    await rm(dir, { recursive: true, force: true });
+  });
+
+  it('is a no-op when the env var is unset', async () => {
+    expect(await seedTokenCacheFromEnv(path)).toBe(false);
+    await expect(stat(path)).rejects.toMatchObject({ code: 'ENOENT' });
+  });
+
+  it('writes the seed with mode 600 when no cache file exists', async () => {
+    process.env[TOKEN_CACHE_ENV] = '{"seeded":true}';
+    expect(await seedTokenCacheFromEnv(path)).toBe(true);
+
+    const stats = await stat(path);
+    expect(stats.mode & 0o777).toBe(0o600);
+    expect(await readFile(path, 'utf8')).toBe('{"seeded":true}');
+  });
+
+  it('does not overwrite an existing non-empty cache file', async () => {
+    const plugin = createFileCachePlugin(path);
+    const ctx = makeContext('{"refreshed":true}');
+    ctx.cacheHasChanged = true;
+    await plugin.afterCacheAccess(ctx as never);
+
+    process.env[TOKEN_CACHE_ENV] = '{"seeded":true}';
+    expect(await seedTokenCacheFromEnv(path)).toBe(false);
+    expect(await readFile(path, 'utf8')).toBe('{"refreshed":true}');
+  });
+
+  it('throws when the seed is not valid JSON', async () => {
+    process.env[TOKEN_CACHE_ENV] = 'not-json';
+    await expect(seedTokenCacheFromEnv(path)).rejects.toThrow(TOKEN_CACHE_ENV);
     await expect(stat(path)).rejects.toMatchObject({ code: 'ENOENT' });
   });
 });
