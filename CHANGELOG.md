@@ -11,6 +11,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - **HTTP (Streamable HTTP) transport** with bearer-token auth, gated by the new `ONENOTE_MCP_HTTP_TOKEN` env var. Boot with `npx @atomiclabs97/onenote-mcp --transport http --port 3000`. Mounts the existing tool surface on `POST/GET/DELETE /mcp` so [claude.ai](https://claude.ai) Connectors and other remote MCP clients can reach a self-hosted instance. Constant-time bearer comparison; missing or wrong token → `401`. Server refuses to start in HTTP mode without a token configured.
 - `GET /healthz` unauthenticated endpoint for platform health checks.
 - `--host` / `--port` CLI flags (with matching `ONENOTE_MCP_HTTP_HOST` / `ONENOTE_MCP_HTTP_PORT` env vars). Defaults to `127.0.0.1:3000` — set `--host 0.0.0.0` for container / PaaS deployments.
+- **Self-hosted deployment support.** Multi-stage `Dockerfile` and `fly.toml` template; release workflow now publishes a Docker image to the GitHub Container Registry (`ghcr.io/ahmadalmezaal/onenote-mcp`) on every version tag. Copy-paste deployment guides for [Fly.io](docs/deployment/fly.md) and [Docker / VPS](docs/deployment/docker.md), plus a [claude.ai Connector walkthrough](docs/deployment/claude-ai-connector.md).
+- `ONENOTE_MCP_TOKEN_CACHE` env var — seeds the token cache from a `tokens.json` produced by `onenote-mcp login` elsewhere, so headless hosts with no TTY can run the HTTP transport. Applied only in `--transport http` mode when no cached token exists yet.
 
 ### Unchanged
 
