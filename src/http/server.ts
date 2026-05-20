@@ -22,6 +22,7 @@ const HEALTHZ_PATH = '/healthz';
 const bearerEqual = (header: string | undefined, token: string): boolean => {
   if (!header) return false;
   const expected = `Bearer ${token}`;
+  if (header.length !== expected.length) return false;
   const a = Buffer.from(header);
   const b = Buffer.from(expected);
   if (a.length !== b.length) return false;
@@ -48,12 +49,23 @@ const sendUnauthorized = (res: ServerResponse): void => {
 const handleMcpRequest = async (req: IncomingMessage, res: ServerResponse): Promise<void> => {
   const server = createMcpServer();
   const transport = new StreamableHTTPServerTransport({ sessionIdGenerator: undefined });
-  res.on('close', () => {
-    void transport.close();
-    void server.close();
-  });
-  await server.connect(transport);
-  await transport.handleRequest(req, res);
+
+  let cleaned = false;
+  const cleanup = async (): Promise<void> => {
+    if (cleaned) return;
+    cleaned = true;
+    await transport.close();
+    await server.close();
+  };
+
+  res.on('close', () => { void cleanup(); });
+
+  try {
+    await server.connect(transport);
+    await transport.handleRequest(req, res);
+  } finally {
+    await cleanup();
+  }
 };
 
 const route = (token: string) =>
