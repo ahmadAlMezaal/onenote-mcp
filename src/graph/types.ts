@@ -55,8 +55,3 @@ export interface Page {
     oneNoteWebUrl?: { href: string };
   };
 }
-
-export interface GraphCollection<T> {
-  value: T[];
-  '@odata.nextLink'?: string;
-}

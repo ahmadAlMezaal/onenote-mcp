@@ -32,7 +32,3 @@ export const getMsalClient = (): PublicClientApplication => {
   cachedClient = new PublicClientApplication(config);
   return cachedClient;
 };
-
-export const resetMsalClientForTests = (): void => {
-  cachedClient = undefined;
-};
