@@ -9,7 +9,7 @@ yarn install
 yarn typecheck   # tsc --noEmit
 yarn lint        # eslint
 yarn test        # vitest
-yarn build       # tsc → dist/
+yarn build       # tsc + tsc-alias → dist/
 ```
 
 > Yarn (Classic, 1.x) is the source of truth for the lockfile — do not commit `package-lock.json`.
