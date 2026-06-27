@@ -34,16 +34,18 @@ Project conventions for Claude Code (and any other AI assistant working in this 
 
 ```
 src/
-  index.ts                # MCP server entrypoint (stdio transport)
+  index.ts                # MCP server factory + stdio runner
   cli.ts                  # CLI dispatch: login | logout | serve (default)
   config.ts               # env vars, XDG paths, scopes, authority
   markdown.ts             # md ↔ html helpers (full doc + fragment)
   auth/                   # MSAL client + persistent token cache
   graph/                  # Typed Microsoft Graph wrappers (one file per resource)
+  http/                   # Streamable HTTP transport (server, auth gate, healthz)
   tools/                  # One file per MCP tool + index.ts that registers them
 tests/                    # Vitest suites mirroring src/
 scripts/                  # Maintainer scripts (e.g. smoke.ts) — not shipped to npm
 .github/workflows/        # CI (typecheck/lint/test/build) + release (npm publish on tag)
+docs/deployment/          # Self-hosting guides (Fly.io, Docker, claude.ai Connector)
 docs/images/              # Entra walkthrough screenshots referenced by README
 CHANGELOG.md              # Keep a Changelog; bump on every release
 ```
