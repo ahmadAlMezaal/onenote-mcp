@@ -16,7 +16,7 @@ export const searchPages = async (options: SearchPagesOptions): Promise<Page[]> 
   const { query, limit = 25 } = options;
   // Graph's $search on /me/onenote/pages does a server-side full-text match on
   // page title + content. Quoting the term keeps it safe across odata.
-  const escaped = query.replace(/"/g, '\\"');
+  const escaped = query.replaceAll('"', '\\"');
   const top = Math.max(1, Math.min(limit, 100));
   const pages = await paginate<Page>('/me/onenote/pages', {
     query: {
