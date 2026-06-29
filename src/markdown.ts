@@ -12,10 +12,10 @@ const turndown = new TurndownService({
 
 const escapeHtml = (input: string): string =>
   input
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;');
 
 /**
  * Convert Markdown into a full HTML document suitable for the OneNote
