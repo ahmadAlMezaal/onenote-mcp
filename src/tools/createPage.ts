@@ -45,7 +45,7 @@ export const readLocalAttachment = async (rawPath: string): Promise<Uint8Array> 
   // coaxed into exfiltrating local secrets (~/.ssh/id_rsa, /etc/passwd, …) by
   // attaching them to a OneNote page.
   const rel = relative(cwd, full);
-  if (rel.startsWith('..') || rel.startsWith(`..${sep}`)) {
+  if (rel === '..' || rel.startsWith(`..${sep}`)) {
     throw new Error(
       `Attachment path "${rawPath}" resolves outside the working directory; refusing to read.`,
     );
