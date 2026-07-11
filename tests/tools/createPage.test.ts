@@ -37,6 +37,12 @@ describe('readLocalAttachment', () => {
     );
   });
 
+  it('allows files whose names start with two dots (not a traversal)', async () => {
+    await writeFile('..dotfile', Buffer.from([7, 8]));
+    const bytes = await readLocalAttachment('..dotfile');
+    expect(Array.from(bytes)).toEqual([7, 8]);
+  });
+
   it('rejects ~ home-relative paths (treated as a literal filename, not expanded — still escapes)', async () => {
     // Node doesn't expand ~; resolved against cwd it stays inside. So this *would*
     // try to read a literal `~` file (which doesn't exist). Document that
