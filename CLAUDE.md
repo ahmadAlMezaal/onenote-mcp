@@ -44,7 +44,7 @@ src/
   tools/                  # One file per MCP tool + index.ts that registers them
 tests/                    # Vitest suites mirroring src/
 scripts/                  # Maintainer scripts (e.g. smoke.ts) — not shipped to npm
-.github/workflows/        # CI (typecheck/lint/test/build) + release (npm publish on tag)
+.github/workflows/        # CI (typecheck/lint/test/build) + release (npm publish + Docker image on tag)
 docs/deployment/          # Self-hosting guides (Fly.io, Docker, claude.ai Connector)
 docs/images/              # Entra walkthrough screenshots referenced by README
 CHANGELOG.md              # Keep a Changelog; bump on every release
