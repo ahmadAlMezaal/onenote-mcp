@@ -53,7 +53,7 @@ Keep the subject under 72 characters. Wrap the body at ~80.
 
 ## Releasing
 
-Releases are cut by pushing a tag. The `release.yml` workflow publishes to npm using the `NPM_TOKEN` repo secret.
+Releases are cut by pushing a tag. The `release.yml` workflow publishes to npm using the `NPM_TOKEN` repo secret and pushes a Docker image to the GitHub Container Registry.
 
 ```sh
 yarn version --patch   # or --minor / --major
