@@ -1,8 +1,6 @@
 import { marked } from 'marked';
 import TurndownService from 'turndown';
 
-marked.setOptions({ gfm: true, breaks: false });
-
 const turndown = new TurndownService({
   headingStyle: 'atx',
   bulletListMarker: '-',
