@@ -9,7 +9,8 @@
     "onenote-mcp": "./dist/cli.js"
   },
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "provenance": true
   },
   "files": [
     "dist",

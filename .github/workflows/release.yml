@@ -38,10 +38,47 @@ jobs:
       - name: Build
         run: yarn build
 
+      - name: Check the tag matches the package version
+        run: |
+          TAG="${GITHUB_REF_NAME#v}"
+          PKG=$(node -p "require('./package.json').version")
+          if [ "$TAG" != "$PKG" ]; then
+            echo "Tag $TAG does not match package.json version $PKG" >&2
+            exit 1
+          fi
+
+      - name: Pack and verify the tarball
+        run: |
+          npm pack --pack-destination /tmp
+          VERSION=$(node -p "require('./package.json').version")
+          tar -tzf "/tmp/1percentlabs-onenote-mcp-$VERSION.tgz" | sort > /tmp/contents.txt
+          cat /tmp/contents.txt
+          for REQUIRED in \
+            package/package.json \
+            package/README.md \
+            package/LICENSE \
+            package/dist/cli.js \
+            package/dist/index.js \
+            package/dist/index.d.ts \
+            package/dist/config.js \
+            package/dist/markdown.js \
+            package/dist/auth/index.js \
+            package/dist/graph/client.js \
+            package/dist/http/server.js \
+            package/dist/tools/index.js
+          do
+            if ! grep -qx "$REQUIRED" /tmp/contents.txt; then
+              echo "Missing from the tarball: $REQUIRED" >&2
+              exit 1
+            fi
+          done
+
+      # Trusted publishing (OIDC) needs npm 11.5.1+; setup-node ships npm 10 with Node 20.
+      - name: Upgrade npm for trusted publishing
+        run: npm install -g npm@latest
+
       - name: Publish
-        run: npm publish --access public --provenance
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: npm publish --access public
 
   docker:
     name: Build and push Docker image
