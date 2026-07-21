@@ -6,9 +6,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-07-21
+
+### Changed
+
+- **The package has moved to the `@1percentlabs` organisation.** It is now published as `@1percentlabs/onenote-mcp`; the old `@atomiclabs97/onenote-mcp` is deprecated and will receive no further releases. Update any `npx`, `args`, or dependency reference to the new name. Versioning continues unbroken from `0.1.1` — nothing was reset. npm cannot rename a published package, so this is a republish under a new name rather than a transfer; the old package remains installable but frozen at `0.1.1`.
+
 ### Added
 
-- **HTTP (Streamable HTTP) transport** with bearer-token auth, gated by the new `ONENOTE_MCP_HTTP_TOKEN` env var. Boot with `npx @atomiclabs97/onenote-mcp --transport http --port 3000`. Mounts the existing tool surface on `POST/GET/DELETE /mcp` so [claude.ai](https://claude.ai) Connectors and other remote MCP clients can reach a self-hosted instance. Constant-time bearer comparison; missing or wrong token → `401`. Server refuses to start in HTTP mode without a token configured.
+- **HTTP (Streamable HTTP) transport** with bearer-token auth, gated by the new `ONENOTE_MCP_HTTP_TOKEN` env var. Boot with `npx @1percentlabs/onenote-mcp --transport http --port 3000`. Mounts the existing tool surface on `POST/GET/DELETE /mcp` so [claude.ai](https://claude.ai) Connectors and other remote MCP clients can reach a self-hosted instance. Constant-time bearer comparison; missing or wrong token → `401`. Server refuses to start in HTTP mode without a token configured.
 - `GET /healthz` unauthenticated endpoint for platform health checks.
 - `--host` / `--port` CLI flags (with matching `ONENOTE_MCP_HTTP_HOST` / `ONENOTE_MCP_HTTP_PORT` env vars). Defaults to `127.0.0.1:3000` — set `--host 0.0.0.0` for container / PaaS deployments.
 - **Self-hosted deployment support.** Multi-stage `Dockerfile` and `fly.toml` template; release workflow now publishes a Docker image to the GitHub Container Registry (`ghcr.io/ahmadalmezaal/onenote-mcp`) on every version tag. Copy-paste deployment guides for [Fly.io](docs/deployment/fly.md) and [Docker / VPS](docs/deployment/docker.md), plus a [claude.ai Connector walkthrough](docs/deployment/claude-ai-connector.md).

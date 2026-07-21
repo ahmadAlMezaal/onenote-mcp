@@ -23,7 +23,7 @@ The container has no terminal for the device-code login, so run it once on
 your laptop and carry the result over as a secret:
 
 ```sh
-ONENOTE_MCP_CLIENT_ID=<your-client-id> npx @atomiclabs97/onenote-mcp login
+ONENOTE_MCP_CLIENT_ID=<your-client-id> npx @1percentlabs/onenote-mcp login
 ```
 
 ## 2. Configure

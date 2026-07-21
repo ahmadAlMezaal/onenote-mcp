@@ -1,4 +1,4 @@
-# Fly.io deployment template for @atomiclabs97/onenote-mcp.
+# Fly.io deployment template for @1percentlabs/onenote-mcp.
 # See docs/deployment/fly.md for the full walkthrough.
 #
 # `app` must be globally unique — `fly launch` will pick a name for you, or
