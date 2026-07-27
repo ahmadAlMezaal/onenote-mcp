@@ -22,15 +22,13 @@ This caches a refresh token at `~/.config/onenote-mcp/tokens.json`.
 
 ## 2. Launch the app
 
-From the repo root (the `fly.toml` template is already there):
+From the repo root:
 
 ```sh
-fly launch --no-deploy --copy-config
+fly launch --no-deploy
 ```
 
-Accept the bundled `fly.toml` when prompted, and pick a unique app name. The
-template already declares the `/data` volume, the `/healthz` check, and the
-`0.0.0.0` bind.
+Pick a unique app name when prompted.
 
 Create the volume the config expects:
 
