@@ -1,8 +1,8 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { GraphError, graphRequest, paginate } from '@/graph/client.js';
-import { createPage, searchPages, updatePage } from '@/graph/pages.js';
-import { createNotebook } from '@/graph/notebooks.js';
-import { createSection } from '@/graph/sections.js';
+import { createPage, searchPages, updatePage, getPage, getPageContent, deletePage } from '@/graph/pages.js';
+import { createNotebook, listNotebooks } from '@/graph/notebooks.js';
+import { createSection, listSections } from '@/graph/sections.js';
 import { createSectionGroup, listSectionGroups } from '@/graph/sectionGroups.js';
 
 vi.mock('../../src/auth/index.js', () => ({
@@ -305,5 +305,114 @@ describe('paginate', () => {
     const results = await paginate<{ id: string }>('/x');
     expect(results.map((r) => r.id)).toEqual(['1', '2', '3']);
     expect(fetchMock).toHaveBeenCalledTimes(2);
+  });
+});
+
+describe('listNotebooks', () => {
+  it('GETs /me/onenote/notebooks with $select and $orderby', async () => {
+    fetchMock.mockResolvedValueOnce(
+      jsonResponse({ value: [{ id: 'nb-1', displayName: 'Work' }] }),
+    );
+    const notebooks = await listNotebooks();
+    expect(notebooks).toEqual([{ id: 'nb-1', displayName: 'Work' }]);
+
+    const [url] = fetchMock.mock.calls[0]!;
+    const parsed = new URL(String(url));
+    expect(parsed.pathname).toBe('/v1.0/me/onenote/notebooks');
+    expect(parsed.searchParams.get('$select')).toContain('displayName');
+    expect(parsed.searchParams.get('$orderby')).toBe('displayName');
+  });
+});
+
+describe('listSections', () => {
+  it('GETs all sections when no notebookId is given', async () => {
+    fetchMock.mockResolvedValueOnce(
+      jsonResponse({ value: [{ id: 's1', displayName: 'General' }] }),
+    );
+    const sections = await listSections();
+    expect(sections).toEqual([{ id: 's1', displayName: 'General' }]);
+
+    const [url] = fetchMock.mock.calls[0]!;
+    const parsed = new URL(String(url));
+    expect(parsed.pathname).toBe('/v1.0/me/onenote/sections');
+    expect(parsed.searchParams.get('$expand')).toContain('parentNotebook');
+  });
+
+  it('scopes to a notebook when notebookId is given', async () => {
+    fetchMock.mockResolvedValueOnce(jsonResponse({ value: [] }));
+    await listSections('nb-abc');
+
+    const [url] = fetchMock.mock.calls[0]!;
+    const parsed = new URL(String(url));
+    expect(parsed.pathname).toBe('/v1.0/me/onenote/notebooks/nb-abc/sections');
+  });
+
+  it('encodes special characters in notebookId', async () => {
+    fetchMock.mockResolvedValueOnce(jsonResponse({ value: [] }));
+    await listSections('id with spaces');
+
+    const [url] = fetchMock.mock.calls[0]!;
+    expect(String(url)).toContain('id%20with%20spaces');
+  });
+});
+
+describe('getPage', () => {
+  it('GETs a single page by ID with $select and $expand', async () => {
+    fetchMock.mockResolvedValueOnce(jsonResponse({ id: 'p1', title: 'Hello' }));
+    const page = await getPage('p1');
+    expect(page).toEqual({ id: 'p1', title: 'Hello' });
+
+    const [url] = fetchMock.mock.calls[0]!;
+    const parsed = new URL(String(url));
+    expect(parsed.pathname).toBe('/v1.0/me/onenote/pages/p1');
+    expect(parsed.searchParams.get('$select')).toContain('title');
+    expect(parsed.searchParams.get('$expand')).toContain('parentSection');
+  });
+
+  it('encodes special characters in pageId', async () => {
+    fetchMock.mockResolvedValueOnce(jsonResponse({ id: 'a/b' }));
+    await getPage('a/b');
+
+    const [url] = fetchMock.mock.calls[0]!;
+    expect(String(url)).toContain('a%2Fb');
+  });
+});
+
+describe('getPageContent', () => {
+  it('GETs page content as text/html', async () => {
+    fetchMock.mockResolvedValueOnce(
+      new Response('<html><body>content</body></html>', {
+        status: 200,
+        headers: { 'Content-Type': 'text/html' },
+      }),
+    );
+    const html = await getPageContent('page-42');
+    expect(html).toBe('<html><body>content</body></html>');
+
+    const [url, init] = fetchMock.mock.calls[0]!;
+    const parsed = new URL(String(url));
+    expect(parsed.pathname).toBe('/v1.0/me/onenote/pages/page-42/content');
+    expect((init as RequestInit).headers).toMatchObject({ Accept: 'text/html' });
+  });
+});
+
+describe('deletePage', () => {
+  it('DELETEs the page and returns void', async () => {
+    fetchMock.mockResolvedValueOnce(new Response(null, { status: 204 }));
+    const result = await deletePage('page-99');
+    expect(result).toBeUndefined();
+
+    const [url, init] = fetchMock.mock.calls[0]!;
+    const parsed = new URL(String(url));
+    expect(parsed.pathname).toBe('/v1.0/me/onenote/pages/page-99');
+    expect((init as RequestInit).method).toBe('DELETE');
+  });
+
+  it('encodes special characters in pageId', async () => {
+    fetchMock.mockResolvedValueOnce(new Response(null, { status: 204 }));
+    await deletePage('id/with+special');
+
+    const [url] = fetchMock.mock.calls[0]!;
+    expect(String(url)).toContain('id%2Fwith%2Bspecial');
   });
 });
