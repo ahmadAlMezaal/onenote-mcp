@@ -221,7 +221,7 @@ To use OneNote from [claude.ai](https://claude.ai) (web + mobile) you host the H
 | [Docker (VPS / home server)](docs/deployment/docker.md) | Any host you control; uses the published `ghcr.io/ahmadalmezaal/onenote-mcp` image. |
 | [claude.ai Connector](docs/deployment/claude-ai-connector.md) | Wiring the deployed URL into claude.ai and verifying the tools. |
 
-The repo ships a multi-stage [`Dockerfile`](Dockerfile) and a [`fly.toml`](fly.toml) template. Released Docker images are pushed to the GitHub Container Registry on every version tag.
+Released Docker images are pushed to the GitHub Container Registry on every version tag.
 
 ---
 
