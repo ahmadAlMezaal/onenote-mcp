@@ -1,3 +1,4 @@
+import { setTimeout as sleep } from 'node:timers/promises';
 import { GRAPH_BASE_URL } from '@/config.js';
 import { getAccessToken } from '@/auth/index.js';
 
@@ -54,9 +55,6 @@ const backoffDelay = (attempt: number, retryAfterHeader: string | null): number 
   const exp = Math.min(BASE_BACKOFF_MS * 2 ** attempt, 8_000);
   return Math.floor(Math.random() * exp);
 };
-
-const sleep = (ms: number): Promise<void> =>
-  new Promise((resolve) => setTimeout(resolve, ms));
 
 const shapeError = async (response: Response): Promise<GraphError> => {
   const requestId = response.headers.get('request-id') ?? undefined;
