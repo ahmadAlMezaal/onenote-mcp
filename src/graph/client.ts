@@ -143,7 +143,12 @@ export const paginate = async <T>(
   let next: string | undefined = path;
   let pageOptions: RequestOptions | undefined = options;
   while (next) {
-    const page: PageResponse<T> = await graphRequest<PageResponse<T>>(next, pageOptions);
+    // graphRequest yields undefined for an empty 200/204 body — stop rather than deref it.
+    const page: PageResponse<T> | undefined = await graphRequest<PageResponse<T> | undefined>(
+      next,
+      pageOptions,
+    );
+    if (!page) break;
     if (Array.isArray(page.value)) all.push(...page.value);
     next = page['@odata.nextLink'];
     // nextLink is a fully-qualified URL with its own query string — clear our overrides.

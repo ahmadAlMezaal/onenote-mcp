@@ -292,6 +292,32 @@ describe('section groups', () => {
   });
 });
 describe('paginate', () => {
+  it('returns an empty list when the response body is empty instead of dereferencing undefined', async () => {
+    // graphRequest resolves to undefined for an empty 200 body; paginate must
+    // not read `.value` off it.
+    fetchMock.mockResolvedValueOnce(new Response('', { status: 200 }));
+    await expect(paginate('/x')).resolves.toEqual([]);
+  });
+
+  it('returns an empty list for a 204 response', async () => {
+    fetchMock.mockResolvedValueOnce(new Response(null, { status: 204 }));
+    await expect(paginate('/x')).resolves.toEqual([]);
+  });
+
+  it('stops when a nextLink page comes back empty', async () => {
+    fetchMock
+      .mockResolvedValueOnce(
+        jsonResponse({
+          value: [{ id: '1' }],
+          '@odata.nextLink': 'https://graph.microsoft.com/v1.0/x?$skiptoken=abc',
+        }),
+      )
+      .mockResolvedValueOnce(new Response('', { status: 200 }));
+
+    const results = await paginate<{ id: string }>('/x');
+    expect(results.map((r) => r.id)).toEqual(['1']);
+  });
+
   it('follows @odata.nextLink until exhausted', async () => {
     fetchMock
       .mockResolvedValueOnce(

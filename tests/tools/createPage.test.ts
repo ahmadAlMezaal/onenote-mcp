@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import { mkdtemp, rm, writeFile } from 'node:fs/promises';
+import { mkdir, mkdtemp, rm, symlink, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { readLocalAttachment } from '@/tools/createPage.js';
@@ -41,6 +41,26 @@ describe('readLocalAttachment', () => {
     await writeFile('..dotfile', Buffer.from([7, 8]));
     const bytes = await readLocalAttachment('..dotfile');
     expect(Array.from(bytes)).toEqual([7, 8]);
+  });
+
+  it('rejects a symlink inside cwd whose target escapes cwd', async () => {
+    await writeFile(join(dir, 'secret-outside.bin'), Buffer.from([9]));
+    const sandbox = join(dir, 'sandbox');
+    await mkdir(sandbox);
+    process.chdir(sandbox);
+    await symlink(join(dir, 'secret-outside.bin'), join(sandbox, 'link.bin'));
+
+    await expect(readLocalAttachment('link.bin')).rejects.toThrow(
+      /outside the working directory/,
+    );
+  });
+
+  it('still reads a symlink whose target stays inside cwd', async () => {
+    await writeFile('target.bin', Buffer.from([4, 5]));
+    await symlink(join(process.cwd(), 'target.bin'), join(process.cwd(), 'alias.bin'));
+
+    const bytes = await readLocalAttachment('alias.bin');
+    expect(Array.from(bytes)).toEqual([4, 5]);
   });
 
   it('rejects ~ home-relative paths (treated as a literal filename, not expanded — still escapes)', async () => {

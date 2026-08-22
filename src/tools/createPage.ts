@@ -1,5 +1,5 @@
-import { readFile } from 'node:fs/promises';
-import { relative, resolve, sep } from 'node:path';
+import { readFile, realpath } from 'node:fs/promises';
+import { isAbsolute, relative, resolve, sep } from 'node:path';
 import { z } from 'zod';
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { createPage, type CreatePageAttachment } from '@/graph/pages.js';
@@ -37,20 +37,28 @@ const attachmentSchema = z
     path: ['path'],
   });
 
+const escapesCwd = (cwd: string, target: string): boolean => {
+  const rel = relative(cwd, target);
+  return rel === '..' || rel.startsWith(`..${sep}`) || isAbsolute(rel);
+};
+
 export const readLocalAttachment = async (rawPath: string): Promise<Uint8Array> => {
-  const cwd = process.cwd();
+  const cwd = await realpath(process.cwd());
   const full = resolve(cwd, rawPath);
   // Reject paths that escape cwd via "..", an absolute path elsewhere, or symlink
   // targets. This is critical when the tool is invoked by an LLM that could be
   // coaxed into exfiltrating local secrets (~/.ssh/id_rsa, /etc/passwd, …) by
   // attaching them to a OneNote page.
-  const rel = relative(cwd, full);
-  if (rel === '..' || rel.startsWith(`..${sep}`)) {
+  const escaped = (): never => {
     throw new Error(
       `Attachment path "${rawPath}" resolves outside the working directory; refusing to read.`,
     );
-  }
-  return new Uint8Array(await readFile(full));
+  };
+  if (escapesCwd(cwd, full)) escaped();
+  // resolve() is purely lexical, so re-check after following symlinks.
+  const real = await realpath(full);
+  if (escapesCwd(cwd, real)) escaped();
+  return new Uint8Array(await readFile(real));
 };
 
 const inputSchema = {
