@@ -34,7 +34,7 @@ const SECTION_NAME = 'Smoke';
 const GROUP_NAME = 'Smoke Group';
 const NESTED_SECTION_NAME = 'Nested';
 
-const TOTAL_STEPS = 12;
+const TOTAL_STEPS = 13;
 let stepCount = 0;
 const createdPageIds: string[] = [];
 
