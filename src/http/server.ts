@@ -91,7 +91,7 @@ const route = (token: string) =>
     sendJson(res, 404, { error: 'not_found' });
   };
 
-export const createHttpServer = ({ host: _host, port: _port, token }: HttpServerOptions): Server => {
+export const createHttpServer = ({ token }: HttpServerOptions): Server => {
   if (!token || token.length === 0) {
     throw new Error('HTTP transport requires a non-empty bearer token.');
   }
