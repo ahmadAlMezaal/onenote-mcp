@@ -21,7 +21,7 @@ const escapeHtml = (input: string): string =>
  * <html>, <head><title>…</title></head>, and <body>.
  */
 export const markdownToOneNoteHtml = (markdown: string, title: string): string => {
-  const bodyHtml = marked.parse(markdown, { async: false }) as string;
+  const bodyHtml = marked.parse(markdown, { async: false });
   const safeTitle = escapeHtml(title);
   return `<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -61,4 +61,4 @@ export const htmlToMarkdown = (html: string): string => turndown.turndown(html);
  * as the `content` of an `update_page` PATCH command.
  */
 export const markdownToHtmlFragment = (markdown: string): string =>
-  (marked.parse(markdown, { async: false }) as string).trim();
+  marked.parse(markdown, { async: false }).trim();

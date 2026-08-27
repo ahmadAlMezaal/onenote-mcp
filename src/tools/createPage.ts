@@ -33,7 +33,7 @@ const attachmentSchema = z
       .describe('Base64-encoded bytes. Use this OR `path`.'),
   })
   .refine((a) => Boolean(a.path) !== Boolean(a.data), {
-    message: 'Provide exactly one of `path` or `data`.',
+    error: 'Provide exactly one of `path` or `data`.',
     path: ['path'],
   });
 
