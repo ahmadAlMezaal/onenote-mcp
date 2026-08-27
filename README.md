@@ -297,7 +297,7 @@ ONENOTE_MCP_CLIENT_ID=<your-client-id> node dist/cli.js login
 ONENOTE_MCP_CLIENT_ID=<your-client-id> yarn smoke
 ```
 
-It's idempotent: reuses (or creates) a notebook called **OneNote MCP Smoke Test**, walks through 12 steps covering auth, list/search/read/create/update/delete and the multipart attachment path, and cleans up the pages it creates. Sections and section groups are left behind for the next run.
+It's idempotent: reuses (or creates) a notebook called **OneNote MCP Smoke Test**, walks through 13 steps covering auth, list/search/read/create/update/delete and the multipart attachment path, and cleans up the pages it creates. Sections and section groups are left behind for the next run.
 
 If you're using an AI coding assistant (Claude Code, Cursor, etc.), see [`CLAUDE.md`](CLAUDE.md) for project conventions, the arrow-function rule, and the tool-authoring checklist.
 
