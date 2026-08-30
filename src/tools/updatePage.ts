@@ -30,11 +30,11 @@ const operationSchema = z
       .describe('Format of `content`. Markdown (default) is converted to HTML before sending.'),
   })
   .refine((op) => op.action === 'delete' || op.content !== undefined, {
-    message: '`content` is required for every action except `delete`.',
+    error: '`content` is required for every action except `delete`.',
     path: ['content'],
   })
   .refine((op) => op.action !== 'insert' || op.position !== undefined, {
-    message: '`position` is required when `action` is `insert`.',
+    error: '`position` is required when `action` is `insert`.',
     path: ['position'],
   });
 
