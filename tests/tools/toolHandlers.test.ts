@@ -531,7 +531,9 @@ describe('update_page handler', () => {
     expect(commands[0]!.content).toBe('<p>body text</p>');
   });
 
-  it('greedy-unwraps outer <p> pair for multi-paragraph title markdown', async () => {
+  it('leaves multi-paragraph title markdown intact rather than unwrapping across pairs', async () => {
+    // A greedy `^<p>(.*)</p>$` match would strip the first <p> and the last
+    // </p>, sending unbalanced `line1</p>\n<p>line2` to Graph.
     vi.mocked(markdownToHtmlFragment).mockReturnValueOnce('<p>line1</p>\n<p>line2</p>');
     vi.mocked(updatePage).mockResolvedValueOnce(undefined);
 
@@ -543,7 +545,22 @@ describe('update_page handler', () => {
     });
 
     const commands = vi.mocked(updatePage).mock.calls[0]![1];
-    expect(commands[0]!.content).toBe('line1</p>\n<p>line2');
+    expect(commands[0]!.content).toBe('<p>line1</p>\n<p>line2</p>');
+  });
+
+  it('still unwraps a single <p> pair that contains inline markup', async () => {
+    vi.mocked(markdownToHtmlFragment).mockReturnValueOnce('<p><strong>New</strong> Title</p>');
+    vi.mocked(updatePage).mockResolvedValueOnce(undefined);
+
+    const { register } = await import('@/tools/updatePage.js');
+    const handler = captureHandler(register);
+    await handler({
+      pageId: 'page-1',
+      operations: [{ target: 'title', action: 'replace', content: '**New** Title', format: 'markdown' }],
+    });
+
+    const commands = vi.mocked(updatePage).mock.calls[0]![1];
+    expect(commands[0]!.content).toBe('<strong>New</strong> Title');
   });
 
   it('does NOT unwrap when content has no <p> wrapper at all', async () => {

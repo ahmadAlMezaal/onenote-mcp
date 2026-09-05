@@ -8,6 +8,10 @@ const turndown = new TurndownService({
   emDelimiter: '_',
 });
 
+// Graph returns full HTML documents; without this, turndown emits <head> text
+// (page title, inline CSS/JS) as body content.
+turndown.remove(['title', 'style', 'script']);
+
 const escapeHtml = (input: string): string =>
   input
     .replaceAll('&', '&amp;')
