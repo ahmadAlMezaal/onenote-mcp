@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Fixed
+
+- `--help`, `--version` and the version reported to MCP clients now come from `package.json`. Releases 0.2.1 and 0.2.2 reported themselves as 0.2.0.
+
 ## [0.2.2] - 2026-10-01
 
 ### Fixed

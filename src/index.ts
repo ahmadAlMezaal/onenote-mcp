@@ -1,9 +1,14 @@
+import { createRequire } from 'node:module';
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import { registerAllTools } from './tools/index.js';
 
+// Read from package.json so the reported version can't drift from the release.
+// `../package.json` resolves to the package root from both src/ and dist/.
+const { version } = createRequire(import.meta.url)('../package.json') as { version: string };
+
 export const SERVER_NAME = 'onenote-mcp';
-export const SERVER_VERSION = '0.2.0';
+export const SERVER_VERSION = version;
 
 export const createServer = (): McpServer => {
   const server = new McpServer({
