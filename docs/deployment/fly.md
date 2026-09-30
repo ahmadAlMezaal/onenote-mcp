@@ -15,7 +15,7 @@ The hosted server has no terminal, so the device-code login runs **once on your
 laptop**. Its output — `tokens.json` — is uploaded to Fly as a secret.
 
 ```sh
-ONENOTE_MCP_CLIENT_ID=<your-client-id> npx @1percentlabs/onenote-mcp login
+ONENOTE_MCP_CLIENT_ID=<your-client-id> npx @onelastcommit/onenote-mcp login
 ```
 
 This caches a refresh token at `~/.config/onenote-mcp/tokens.json`.

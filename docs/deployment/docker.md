@@ -10,9 +10,9 @@ Cloudflare Tunnel.
 Released images are published to the GitHub Container Registry on every tag:
 
 ```
-ghcr.io/ahmadalmezaal/onenote-mcp:latest
-ghcr.io/ahmadalmezaal/onenote-mcp:0.2          # major.minor
-ghcr.io/ahmadalmezaal/onenote-mcp:0.2.0        # exact version
+ghcr.io/onelastcommit/onenote-mcp:latest
+ghcr.io/onelastcommit/onenote-mcp:0.2          # major.minor
+ghcr.io/onelastcommit/onenote-mcp:0.2.1        # exact version
 ```
 
 Or build locally from the repo root: `docker build -t onenote-mcp .`
@@ -23,7 +23,7 @@ The container has no terminal for the device-code login, so run it once on
 your laptop and carry the result over as a secret:
 
 ```sh
-ONENOTE_MCP_CLIENT_ID=<your-client-id> npx @1percentlabs/onenote-mcp login
+ONENOTE_MCP_CLIENT_ID=<your-client-id> npx @onelastcommit/onenote-mcp login
 ```
 
 ## 2. Configure

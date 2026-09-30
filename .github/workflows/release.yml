@@ -51,7 +51,7 @@ jobs:
         run: |
           npm pack --pack-destination /tmp
           VERSION=$(node -p "require('./package.json').version")
-          tar -tzf "/tmp/1percentlabs-onenote-mcp-$VERSION.tgz" | sort > /tmp/contents.txt
+          tar -tzf "/tmp/onelastcommit-onenote-mcp-$VERSION.tgz" | sort > /tmp/contents.txt
           cat /tmp/contents.txt
           for REQUIRED in \
             package/package.json \

@@ -1,10 +1,10 @@
-# @1percentlabs/onenote-mcp
+# @onelastcommit/onenote-mcp
 
-[![npm version](https://img.shields.io/npm/v/@1percentlabs/onenote-mcp.svg)](https://www.npmjs.com/package/@1percentlabs/onenote-mcp)
-[![CI](https://github.com/ahmadAlMezaal/onenote-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/ahmadAlMezaal/onenote-mcp/actions/workflows/ci.yml)
+[![npm version](https://img.shields.io/npm/v/@onelastcommit/onenote-mcp.svg)](https://www.npmjs.com/package/@onelastcommit/onenote-mcp)
+[![CI](https://github.com/onelastcommit/onenote-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/onelastcommit/onenote-mcp/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-> **This package has moved.** It was previously published as `@atomiclabs97/onenote-mcp` and is now `@1percentlabs/onenote-mcp`. If you arrived from an older link or have the old name in a config file, switch to the new one — the old package is deprecated and frozen at `0.1.1`. Versions carry on unbroken, so `0.2.0` is the direct successor to `0.1.1`.
+> **This package has moved.** It was previously published as `@atomiclabs97/onenote-mcp` and then `@1percentlabs/onenote-mcp`, and is now `@onelastcommit/onenote-mcp`. If you have an old name in a config file, switch to the new one. The old packages are deprecated and no longer updated. Versions carry on unbroken, so `0.2.1` is the direct successor to `0.2.0`.
 
 An [MCP](https://modelcontextprotocol.io) server for **Microsoft OneNote**. Bring your notebooks into Claude, Cursor, and any MCP-compatible client — list notebooks and sections, full-text search across pages, read individual pages, and create or delete pages from natural language. Authentication uses Microsoft's device-code flow against your own Entra ID app registration, so your data and credentials never leave your machine.
 
@@ -70,7 +70,7 @@ Back on the app's **Overview** page, copy the **Application (client) ID**. You'l
 ### 2. Sign in
 
 ```sh
-ONENOTE_MCP_CLIENT_ID=<your-app-client-id> npx @1percentlabs/onenote-mcp login
+ONENOTE_MCP_CLIENT_ID=<your-app-client-id> npx @onelastcommit/onenote-mcp login
 ```
 
 This prints a code and a URL like:
@@ -85,7 +85,7 @@ Open the URL, paste the code, sign in with the Microsoft account whose OneNote y
 To sign out:
 
 ```sh
-npx @1percentlabs/onenote-mcp logout
+npx @onelastcommit/onenote-mcp logout
 ```
 
 ### 3. Wire it into your MCP client
@@ -99,7 +99,7 @@ Edit `~/Library/Application Support/Claude/claude_desktop_config.json` (macOS) o
   "mcpServers": {
     "onenote": {
       "command": "npx",
-      "args": ["-y", "@1percentlabs/onenote-mcp"],
+      "args": ["-y", "@onelastcommit/onenote-mcp"],
       "env": {
         "ONENOTE_MCP_CLIENT_ID": "your-app-client-id"
       }
@@ -119,7 +119,7 @@ Add to `~/.cursor/mcp.json`:
   "mcpServers": {
     "onenote": {
       "command": "npx",
-      "args": ["-y", "@1percentlabs/onenote-mcp"],
+      "args": ["-y", "@onelastcommit/onenote-mcp"],
       "env": {
         "ONENOTE_MCP_CLIENT_ID": "your-app-client-id"
       }
@@ -130,7 +130,7 @@ Add to `~/.cursor/mcp.json`:
 
 #### Anything else
 
-Any MCP-compatible client that supports stdio servers will work. Run `npx @1percentlabs/onenote-mcp` with `ONENOTE_MCP_CLIENT_ID` set in the environment.
+Any MCP-compatible client that supports stdio servers will work. Run `npx @onelastcommit/onenote-mcp` with `ONENOTE_MCP_CLIENT_ID` set in the environment.
 
 ---
 
@@ -154,7 +154,7 @@ In addition to the default stdio mode, the server can speak the MCP **Streamable
 export ONENOTE_MCP_HTTP_TOKEN="$(openssl rand -base64 32)"
 
 ONENOTE_MCP_CLIENT_ID=<your-app-client-id> \
-  npx @1percentlabs/onenote-mcp --transport http --port 3000
+  npx @onelastcommit/onenote-mcp --transport http --port 3000
 ```
 
 The server refuses to start without `ONENOTE_MCP_HTTP_TOKEN` — a remote MCP endpoint with no auth is the entire world reading your OneNote.
@@ -190,7 +190,7 @@ curl -X POST -H "Authorization: Bearer $ONENOTE_MCP_HTTP_TOKEN" \
      http://127.0.0.1:3000/mcp
 ```
 
-Sign in with `npx @1percentlabs/onenote-mcp login` (one-time, on the host running the server) before any tools are invoked — the device-code flow is the same as the stdio path and caches tokens at `~/.config/onenote-mcp/tokens.json`. The bearer token is **server↔client auth only**; the Microsoft Graph credentials still come from the cached refresh token.
+Sign in with `npx @onelastcommit/onenote-mcp login` (one-time, on the host running the server) before any tools are invoked — the device-code flow is the same as the stdio path and caches tokens at `~/.config/onenote-mcp/tokens.json`. The bearer token is **server↔client auth only**; the Microsoft Graph credentials still come from the cached refresh token.
 
 On a headless host (a container, a PaaS) there's no terminal for the device-code login. Run `login` on your laptop instead, then pass the resulting `tokens.json` to the server via the `ONENOTE_MCP_TOKEN_CACHE` env var — on first boot in HTTP mode the server seeds its cache from it. The [deployment guides](#self-hosting) walk through this.
 
@@ -220,7 +220,7 @@ To use OneNote from [claude.ai](https://claude.ai) (web + mobile) you host the H
 | Guide | For |
 | --- | --- |
 | [Fly.io](docs/deployment/fly.md) | Fastest path — free-tier eligible, ~10 minutes, HTTPS handled for you. |
-| [Docker (VPS / home server)](docs/deployment/docker.md) | Any host you control; uses the published `ghcr.io/ahmadalmezaal/onenote-mcp` image. |
+| [Docker (VPS / home server)](docs/deployment/docker.md) | Any host you control; uses the published `ghcr.io/onelastcommit/onenote-mcp` image. |
 | [claude.ai Connector](docs/deployment/claude-ai-connector.md) | Wiring the deployed URL into claude.ai and verifying the tools. |
 
 Released Docker images are pushed to the GitHub Container Registry on every version tag.
@@ -272,7 +272,7 @@ Released Docker images are pushed to the GitHub Container Registry on every vers
 PRs welcome. The codebase aims to stay small and focused.
 
 ```sh
-git clone https://github.com/ahmadAlMezaal/onenote-mcp
+git clone https://github.com/onelastcommit/onenote-mcp
 cd onenote-mcp
 yarn install
 yarn build

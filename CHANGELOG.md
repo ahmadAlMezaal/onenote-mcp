@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.2.1] - 2026-09-30
+
+### Changed
+
+- **The package has moved to the `@onelastcommit` organisation.** It is now published as `@onelastcommit/onenote-mcp`, and the repository lives at `onelastcommit/onenote-mcp`. `@1percentlabs/onenote-mcp` is deprecated and frozen at `0.2.0`. Docker images are now published to `ghcr.io/onelastcommit/onenote-mcp`. No code changes.
+
 ## [0.2.0] - 2026-07-21
 
 ### Changed
@@ -70,5 +76,8 @@ Initial public release.
 - End-to-end smoke script (`yarn smoke`) that exercises every tool against a real OneNote account
 - GitHub Actions: CI (typecheck / lint / test / build on every push and PR) + Release (npm publish with provenance on `v*.*.*` tag)
 
-[0.1.1]: https://github.com/ahmadAlMezaal/onenote-mcp/releases/tag/v0.1.1
-[0.1.0]: https://github.com/ahmadAlMezaal/onenote-mcp/releases/tag/v0.1.0
+[Unreleased]: https://github.com/onelastcommit/onenote-mcp/compare/v0.2.1...HEAD
+[0.2.1]: https://github.com/onelastcommit/onenote-mcp/compare/v0.2.0...v0.2.1
+[0.2.0]: https://github.com/onelastcommit/onenote-mcp/compare/v0.1.1...v0.2.0
+[0.1.1]: https://github.com/onelastcommit/onenote-mcp/releases/tag/v0.1.1
+[0.1.0]: https://github.com/onelastcommit/onenote-mcp/releases/tag/v0.1.0

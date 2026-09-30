@@ -1,6 +1,6 @@
 {
-  "name": "@1percentlabs/onenote-mcp",
-  "version": "0.2.0",
+  "name": "@onelastcommit/onenote-mcp",
+  "version": "0.2.1",
   "description": "MCP server for Microsoft OneNote — read, search, create, and delete pages via Microsoft Graph.",
   "type": "module",
   "main": "./dist/index.js",
@@ -50,12 +50,12 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ahmadAlMezaal/onenote-mcp.git"
+    "url": "git+https://github.com/onelastcommit/onenote-mcp.git"
   },
   "bugs": {
-    "url": "https://github.com/ahmadAlMezaal/onenote-mcp/issues"
+    "url": "https://github.com/onelastcommit/onenote-mcp/issues"
   },
-  "homepage": "https://github.com/ahmadAlMezaal/onenote-mcp#readme",
+  "homepage": "https://github.com/onelastcommit/onenote-mcp#readme",
   "dependencies": {
     "@azure/msal-node": "^2.16.2",
     "@modelcontextprotocol/sdk": "^1.0.4",
