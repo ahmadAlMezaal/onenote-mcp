@@ -6,6 +6,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.2.2] - 2026-10-01
+
+### Fixed
+
+- `read_page` no longer returns the page title, inline CSS or scripts from the HTML `<head>` as part of the page's markdown.
+- Updating a page title with multi-paragraph markdown no longer sends unbalanced HTML to Graph.
+
+### Changed
+
+- Validation errors use Zod 4's `error` option instead of the deprecated `message`. No change in behaviour.
+- Dependencies updated, and the release and Docker image now build on Node 24 LTS.
+
 ## [0.2.1] - 2026-09-30
 
 ### Changed
@@ -76,7 +88,8 @@ Initial public release.
 - End-to-end smoke script (`yarn smoke`) that exercises every tool against a real OneNote account
 - GitHub Actions: CI (typecheck / lint / test / build on every push and PR) + Release (npm publish with provenance on `v*.*.*` tag)
 
-[Unreleased]: https://github.com/onelastcommit/onenote-mcp/compare/v0.2.1...HEAD
+[Unreleased]: https://github.com/onelastcommit/onenote-mcp/compare/v0.2.2...HEAD
+[0.2.2]: https://github.com/onelastcommit/onenote-mcp/compare/v0.2.1...v0.2.2
 [0.2.1]: https://github.com/onelastcommit/onenote-mcp/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/onelastcommit/onenote-mcp/compare/v0.1.1...v0.2.0
 [0.1.1]: https://github.com/onelastcommit/onenote-mcp/releases/tag/v0.1.1
