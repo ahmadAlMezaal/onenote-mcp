@@ -4,6 +4,8 @@
 [![CI](https://github.com/onelastcommit/onenote-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/onelastcommit/onenote-mcp/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
+Part of [One Last Commit](https://github.com/onelastcommit): small ideas, taken further than strictly necessary.
+
 > **This package has moved.** It was previously published as `@atomiclabs97/onenote-mcp` and then `@1percentlabs/onenote-mcp`, and is now `@onelastcommit/onenote-mcp`. If you have an old name in a config file, switch to the new one. The old packages are deprecated and no longer updated. Versions carry on unbroken, so `0.2.1` is the direct successor to `0.2.0`.
 
 An [MCP](https://modelcontextprotocol.io) server for **Microsoft OneNote**. Bring your notebooks into Claude, Cursor, and any MCP-compatible client — list notebooks and sections, full-text search across pages, read individual pages, and create or delete pages from natural language. Authentication uses Microsoft's device-code flow against your own Entra ID app registration, so your data and credentials never leave your machine.
