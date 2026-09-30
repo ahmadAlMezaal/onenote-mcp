@@ -9,7 +9,7 @@
 
 services:
   onenote-mcp:
-    image: ghcr.io/ahmadalmezaal/onenote-mcp:latest
+    image: ghcr.io/onelastcommit/onenote-mcp:latest
     restart: unless-stopped
     ports:
       - "3000:3000"
