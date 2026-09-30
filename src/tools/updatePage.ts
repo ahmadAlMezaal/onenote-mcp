@@ -60,7 +60,7 @@ const toGraphCommand = (op: z.infer<typeof operationSchema>): UpdatePageCommand 
     // marked wraps single-line content in <p>…</p>. The title element renders
     // those literally, so unwrap exactly one such pair when targeting the title.
     if (isTitleTarget(op.target) && op.format !== 'html') {
-      const unwrapped = content.match(/^<p>([\s\S]*)<\/p>$/);
+      const unwrapped = content.match(/^<p>((?:(?!<\/p>)[\s\S])*)<\/p>$/);
       if (unwrapped) content = unwrapped[1]!;
     }
     cmd.content = content;

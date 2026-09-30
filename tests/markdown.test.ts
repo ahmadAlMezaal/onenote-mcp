@@ -59,6 +59,19 @@ describe('htmlToMarkdown', () => {
     expect(md).toContain('Hello _world_.');
   });
 
+  it('drops <head> content instead of emitting it as body text', () => {
+    // Graph's GET /pages/{id}/content returns a full document; the page title
+    // and any inline CSS/JS live in <head> and are not page content.
+    const md = htmlToMarkdown(
+      '<html><head><title>My Page</title><style>p{color:red}</style>' +
+        '<script>var x=1;</script></head><body><p>Hello.</p></body></html>',
+    );
+    expect(md).not.toContain('My Page');
+    expect(md).not.toContain('color:red');
+    expect(md).not.toContain('var x=1');
+    expect(md.trim()).toBe('Hello.');
+  });
+
   it('renders code blocks as fenced', () => {
     const md = htmlToMarkdown('<pre><code>const x = 1;</code></pre>');
     expect(md).toContain('```');
