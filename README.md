@@ -263,7 +263,7 @@ Released Docker images are pushed to the GitHub Container Registry on every vers
 
 ## Known limitations
 
-- **Attachments are sent in-memory.** `create_page` reads attachment files synchronously before posting; very large files (~150 MB+) may strain Node's heap. Streamed uploads are a future enhancement.
+- **Attachments are sent in-memory.** `create_page` reads attachment files fully into memory before posting; very large files (~150 MB+) may strain Node's heap. Streamed uploads are a future enhancement.
 - **`update_page` targets are raw `data-id` selectors.** To edit a specific element, read the page first and pull the `data-id` attribute out of the returned HTML. Higher-level selectors (e.g. "the section under heading X") are tracked for a follow-up.
 - **Search latency.** Microsoft Graph's `$search` against `/me/onenote/pages` can take a few seconds against large notebooks; the server retries on 429s with exponential backoff.
 
